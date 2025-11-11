@@ -1,0 +1,744 @@
+/* --- 1. CSS Reset & Global Theme --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary-color: #4f46e5;
+  --primary-dark: #4338ca;
+  --primary-light: #6366f1;
+  --secondary-color: #10b981; /* A nice green for success */
+  --dark-gray: #111827;
+  --medium-gray: #6b7280;
+  --light-gray-bg: #f9fafb;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #ffffff;
+  color: var(--dark-gray);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  margin-bottom: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  margin-bottom: 1rem;
+  color: var(--medium-gray);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* --- 2. Navbar Styling --- */
+.navbar {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar-logo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--dark-gray);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.navbar-logo:hover {
+  text-decoration: none;
+  color: var(--primary-color);
+}
+/* Simple SVG Logo */
+.navbar-logo svg {
+  width: 28px;
+  height: 28px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: var(--medium-gray);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.navbar-links a:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+/* --- 3. Form & Button Styling --- */
+form {
+  max-width: 500px;
+  margin-top: 2rem;
+}
+
+form div {
+  margin-bottom: 1.25rem;
+}
+
+form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark-gray);
+}
+
+form input[type='text'],
+form input[type='email'],
+form input[type='password'],
+form input[type='number'],
+form input[type='date'] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem; /* Rounded corners */
+  box-shadow: var(--shadow-sm);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+form input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-light, #c7d2fe);
+}
+
+/* --- 4. Button Styling --- */
+.btn {
+  display: inline-block;
+  background: var(--primary-color);
+  background-image: linear-gradient(to right, var(--primary-color) 0%, var(--primary-light) 100%);
+  color: #fff;
+  padding: 0.75rem 1.75rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+.btn:hover {
+  color: #fff;
+  text-decoration: none;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* --- 5. Hero Section (for HomePage) --- */
+.hero-section {
+  text-align: center;
+  padding: 6rem 1rem;
+}
+
+.hero-section h1 {
+  font-size: 3.5rem; /* Bigger */
+  font-weight: 800;
+  color: var(--dark-gray);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.1;
+  background: -webkit-linear-gradient(45deg, var(--dark-gray), var(--primary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  color: var(--medium-gray);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2.5rem;
+  margin-top: 1rem;
+}
+
+/* --- 6. Search Bar (like prototype) --- */
+.search-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 0.75rem;
+  border-radius: 0.75rem; /* Softer radius */
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-bar input {
+  width: 100%;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.375rem;
+}
+.search-bar input:focus {
+  outline: none;
+}
+.search-bar .btn {
+  white-space: nowrap; /* Prevents button text from wrapping */
+}
+
+@media (min-width: 640px) {
+  .search-bar {
+    flex-direction: row;
+  }
+}
+
+/* --- 7. Button Variants --- */
+.btn-nav-register {
+  display: inline-block;
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+.btn-nav-register:hover {
+  background: var(--primary-dark);
+  text-decoration: none;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-delete:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+
+/* --- 8. Messages --- */
+.message-error {
+  color: #991b1b;
+  background: #fee2e2;
+  padding: 1rem;
+  border: 1px solid #fca5a5;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+.message-success {
+  color: #166534;
+  background: #dcfce7;
+  padding: 1rem;
+  border: 1px solid #86efac;
+  border-radius: 0.375rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+/* --- 9. Listing Card --- */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.listing-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem; /* Softer radius */
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+.listing-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.card-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--primary-dark);
+}
+.card-header .price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+.card-body {
+  padding: 1.25rem;
+  flex-grow: 1;
+}
+.card-body p {
+  margin-bottom: 0.75rem;
+  color: var(--medium-gray);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.card-body p strong {
+  color: var(--dark-gray);
+  min-width: 70px; /* Aligns text */
+}
+
+.card-footer {
+  padding: 1.25rem;
+  background: var(--light-gray-bg);
+  border-top: 1px solid var(--border-color);
+}
+.card-footer .btn {
+  width: 100%;
+}
+
+
+/* --- 10. Dashboard --- */
+.dashboard-header {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* For mobile */
+}
+.dashboard-header h1 {
+  font-size: 2.25rem;
+  margin: 0;
+}
+.dashboard-header .btn {
+  margin-top: 0; /* Removed top margin */
+}
+
+.dashboard-my-listings h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.listings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.listings-table th,
+.listings-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+.listings-table th {
+  background-color: var(--light-gray-bg);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--medium-gray);
+}
+.listings-table tr:last-child td {
+  border-bottom: none;
+}
+.listings-table tr:hover {
+  background-color: #fcfdff;
+}
+.listings-table td:last-child {
+  text-align: center;
+}
+
+/* --- 11. Pricing Page (Matches Screenshot) --- */
+.pricing-container {
+  max-width: 900px;
+  margin: 2rem auto;
+}
+.pricing-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 3rem;
+  background: var(--light-gray-bg);
+  border-radius: 9px; /* Pill shape from screenshot */
+  padding: 0.5rem;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid var(--border-color);
+}
+.btn-toggle {
+  border: none;
+  background: transparent;
+  padding: 0.75rem 1.5rem;
+  border-radius: 7px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--medium-gray);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-toggle.active {
+  background: #fff;
+  color: var(--dark-gray);
+  box-shadow: var(--shadow-md);
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pricing-card {
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 0.5rem;
+}
+.pricing-card .pricing-price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin-bottom: 2rem;
+}
+.pricing-card .pricing-price span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--medium-gray);
+}
+.pricing-features {
+  list-style: none;
+  margin-bottom: 2rem;
+  flex-grow: 1;
+}
+.pricing-features li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+  color: var(--medium-gray);
+}
+.pricing-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+.btn-outline {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
+}
+.btn-outline:hover {
+  background: var(--light-gray-bg);
+  color: var(--primary-dark);
+}
+
+/* This is the green "Pro" card from the screenshot */
+.pricing-card.featured {
+  background: #059669; /* Green from screenshot */
+  color: #fff;
+  border: none;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+}
+.pricing-card.featured h2,
+.pricing-card.featured .pricing-price,
+.pricing-card.featured .pricing-price span,
+.pricing-card.featured .pricing-features li {
+  color: #fff;
+}
+.pricing-card.featured .pricing-features li::before {
+  color: #fff; /* White checkmark */
+}
+.pricing-card.featured .btn {
+  background: #fff;
+  color: #059669; /* Green text */
+}
+.pricing-card.featured .btn:hover {
+  background: #f0fdf4;
+}
+/* This "Pro" badge matches the screenshot */
+.featured-badge {
+  background: var(--primary-color);
+  color: #fff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+/* This is for the "Contact Us" text on the Enterprise card */
+.pricing-card h2.enterprise {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin-bottom: 2rem;
+}
+
+
+/* --- 12. Analytics Page (Matches Screenshot) --- */
+.analytics-container {
+  max-width: 1200px;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.stat-title {
+  display: block;
+  font-size: 1rem;
+  color: var(--medium-gray);
+  margin-bottom: 0.5rem;
+}
+.stat-value {
+  display: block;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+}
+.stat-change {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 768px) {
+  .chart-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+.chart-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.chart-card h3 {
+  margin-bottom: 1.5rem;
+}
+.other-widgets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.widget-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.widget-card h3 {
+  font-size: 1.1rem;
+}
+
+/* --- 13. Chatbot --- */
+.chat-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+.chat-fab:hover {
+  background: var(--primary-dark);
+  transform: scale(1.1);
+}
+.chat-fab svg {
+  width: 2rem;
+  height: 2rem;
+}
+.chat-window {
+  position: fixed;
+  bottom: 7rem;
+  right: 2rem;
+  width: 350px;
+  height: 500px;
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+}
+.chat-header {
+  background: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chat-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.chat-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.chat-messages {
+  flex-grow: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.chat-message {
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  max-width: 80%;
+  line-height: 1.4;
+}
+.chat-message.bot {
+  background: var(--light-gray-bg);
+  color: var(--dark-gray);
+  border-bottom-left-radius: 0.25rem;
+  align-self: flex-start;
+}
+.chat-message.bot.typing {
+  color: var(--medium-gray);
+}
+.chat-message.user {
+  background: var(--primary-color);
+  color: white;
+  border-bottom-right-radius: 0.25rem;
+  align-self: flex-end;
+}
+.chat-input-area {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  padding: 0.5rem;
+}
+.chat-input-area input {
+  flex-grow: 1;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+}
+.chat-input-area input:focus {
+  outline: none;
+}
+.chat-input-area button {
+  border: none;
+  background: var(--primary-color);
+  color: white;
+  padding: 0 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background 0.2s ease;
+}
+.chat-input-area button:hover {
+  background: var(--primary-dark);
+}
