@@ -953,3 +953,7 @@ main { min-height: calc(100vh - 78px); }
   .detail-kpis, .profile-meta { grid-template-columns:1fr 1fr; }
   .admin-page { padding:1rem 0 3rem; }
 }
+
+.listing-results-meta { max-width:1280px; margin:0 auto 1rem; color:#64748b; font-size:.85rem; padding:0 .25rem; }
+.listing-results-meta strong { color:#111827; font-size:1rem; }
+.listing-results-meta span { margin:0 .4rem; color:#cbd5e1; }
