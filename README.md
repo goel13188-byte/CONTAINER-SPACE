@@ -342,3 +342,104 @@ Render's free web services can spin down after inactivity. The first request aft
 **ShipSpace - Container Space Optimization Platform**
 
 Built using the MERN stack with MongoDB Atlas, Render, Vercel, and Gemini AI.
+
+
+
+## 👑 Admin Console & Demo Accounts
+
+ShipSpace now includes a protected admin console at:
+
+```
+/admin
+```
+
+Only users with `role: "admin"` can access it.
+
+The admin console lets you:
+
+- View all registered users.
+- See each user's email/login, company, role, verification status and plan.
+- Promote a normal user to admin or change an admin back to a user.
+- Monitor the number of registered accounts.
+
+### Password security
+
+Passwords are **never displayed** in the admin console. They are stored as bcrypt hashes in MongoDB. If a password needs to be changed, use a controlled password-reset workflow rather than reading the stored hash.
+
+### Seed 12 demo accounts
+
+The backend can create 12 demo accounts automatically when the following Render variables are configured:
+
+```env
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
+DEMO_USER_PASSWORD=your_demo_password
+SEED_DEMO_USERS=true
+```
+
+The demo accounts use these logins:
+
+```
+demo01@shipspace.demo
+demo02@shipspace.demo
+demo03@shipspace.demo
+demo04@shipspace.demo
+demo05@shipspace.demo
+demo06@shipspace.demo
+demo07@shipspace.demo
+demo08@shipspace.demo
+demo09@shipspace.demo
+demo10@shipspace.demo
+demo11@shipspace.demo
+demo12@shipspace.demo
+```
+
+All demo accounts use the password configured in `DEMO_USER_PASSWORD`.
+
+After the accounts have been created, set:
+
+```
+SEED_DEMO_USERS=false
+```
+
+This prevents unnecessary seed checks on future deployments.
+
+### Render variables for the complete project
+
+Your backend environment should contain:
+
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_long_random_secret
+GEMINI_API_KEY=your_gemini_api_key
+NODE_ENV=production
+
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
+DEMO_USER_PASSWORD=your_demo_password
+SEED_DEMO_USERS=true
+```
+
+Never commit these values to GitHub.
+
+## 🤖 ShipBot troubleshooting
+
+Check:
+
+```
+https://container-space.onrender.com/api/chat/health
+```
+
+A correctly configured response includes:
+
+```json
+{
+  "status": "ok",
+  "configured": true,
+  "model": "gemini-3.8-flash"
+}
+```
+
+If `configured` is `false`, add `GEMINI_API_KEY` to Render → Environment and redeploy.
+
+ShipBot uses Google's Gemini API from the backend so the API key is not exposed in the browser. The current integration uses `gemini-3.8-flash`. Google recommends environment variables for API keys and documents the REST `generateContent` endpoint and `x-goog-api-key` authentication in its Gemini API documentation.
