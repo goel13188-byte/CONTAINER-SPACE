@@ -4,15 +4,23 @@ const router = express.Router();
 
 const SYSTEM_INSTRUCTION =
   "You are ShipBot, a savvy logistics and negotiation expert for the ShipSpace platform. " +
-  "Help users with logistics, container space, pricing, and negotiation. " +
-  "When discussing pricing, give practical negotiation advice, explain what to check in a quote, " +
-  "and be concise, confident, and professional.";
+  "Help users with logistics, container space, pricing, route planning, and negotiation. " +
+  "Give practical, concise advice. When discussing a quote, explain what is included, " +
+  "what fees may be hidden, and what the user can negotiate.";
+
+router.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    configured: Boolean(process.env.GEMINI_API_KEY),
+    model: 'gemini-3.8-flash',
+  });
+});
 
 router.post('/', async (req, res) => {
   try {
     if (!process.env.GEMINI_API_KEY) {
       return res.status(503).json({
-        message: 'Chatbot is not configured. Add GEMINI_API_KEY to the backend environment.',
+        message: 'ShipBot is not configured. Add GEMINI_API_KEY to the backend environment.',
       });
     }
 
@@ -22,22 +30,28 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'No chat messages were provided.' });
     }
 
-    const contents = messages.slice(-20).map((message) => ({
-      role: message.role === 'model' ? 'model' : 'user',
-      parts: [{ text: String(message.text || '') }],
-    })).filter((message) => message.parts[0].text.trim());
+    const contents = messages
+      .slice(-20)
+      .map((message) => ({
+        role: message.role === 'model' ? 'model' : 'user',
+        parts: [{ text: String(message.text || '').trim() }],
+      }))
+      .filter((message) => message.parts[0].text);
 
     if (!contents.length) {
       return res.status(400).json({ message: 'No valid chat message was provided.' });
     }
 
-    // Gemini conversation history must begin with a user message.
     if (contents[0].role === 'model') {
       contents.shift();
     }
 
+    if (!contents.length || contents[contents.length - 1].role !== 'user') {
+      return res.status(400).json({ message: 'The latest chat message must come from the user.' });
+    }
+
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
       {
         method: 'POST',
         headers: {
@@ -45,10 +59,10 @@ router.post('/', async (req, res) => {
           'x-goog-api-key': process.env.GEMINI_API_KEY,
         },
         body: JSON.stringify({
-          contents,
           systemInstruction: {
             parts: [{ text: SYSTEM_INSTRUCTION }],
           },
+          contents,
         }),
       }
     );
@@ -65,7 +79,9 @@ router.post('/', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Chatbot error:', error);
-    res.status(500).json({ message: 'Unable to contact the chatbot service.' });
+    res.status(500).json({
+      message: 'Unable to contact ShipBot right now. Please try again.',
+    });
   }
 });
 
