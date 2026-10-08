@@ -6,6 +6,8 @@ import userRoutes from './routes/userRoutes.js';
 import listingRoutes from './routes/listingRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import bootstrapDemoData from './utils/bootstrapDemoData.js';
 
 dotenv.config();
 
@@ -19,22 +21,30 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'container-space-backend' });
+  res.json({
+    status: 'ok',
+    service: 'container-space-backend',
+    chatbotConfigured: Boolean(process.env.GEMINI_API_KEY),
+  });
 });
 
 app.use('/api/users', userRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {
     await connectDB();
+    await bootstrapDemoData();
 
     app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Server running in ${process.env.NODE_ENV || 'production'} mode on port ${PORT}`);
+      console.log(
+        `Server running in ${process.env.NODE_ENV || 'production'} mode on port ${PORT}`
+      );
     });
   } catch (error) {
     console.error('Server startup failed:', error.message);
