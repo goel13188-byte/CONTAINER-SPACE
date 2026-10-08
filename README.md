@@ -1,110 +1,344 @@
-ShipSpace - Container Space Optimization Platform
+# ShipSpace - Container Space Optimization Platform
 
-ShipSpace is a peer-to-peer marketplace designed to connect shippers who have unused container space with those who need to ship goods. This platform turns wasted space into revenue, creating a more efficient and sustainable global shipping industry.
+ShipSpace is a peer-to-peer marketplace designed to connect shippers who have unused container space with people who need to ship goods. The platform turns unused container capacity into revenue while making global shipping more efficient and sustainable.
 
-This project is built using the MERN stack (MongoDB, Express, React, Node.js) with a React frontend (Vite) and a Node.js/Express backend.
+This project is built with the **MERN stack**:
 
-Core Features
+- **MongoDB Atlas** - database
+- **Express.js** - backend API
+- **React + Vite** - frontend
+- **Node.js** - backend runtime
 
-User Authentication: Secure JWT-based authentication for user registration and login.
+## 🚀 Live Deployment
 
-Marketplace: Users can find and filter all available container space listings.
+### Backend
 
-Listing Management: Logged-in users can create, view, and delete their own listings.
+**Render:** https://container-space.onrender.com
 
-Pricing Tiers: A "Basic" plan limits users to 5 free listings, prompting them to upgrade.
+Backend health check:
 
-Analytics Dashboard: A protected route for users to see their personal stats, such as total listings (other stats are mocked for now).
+https://container-space.onrender.com/api/health
 
-AI Chatbot: An integrated "ShipBot" (powered by the Gemini API) assists users with logistics and price negotiation.
+Expected response:
 
-Technology Stack
+```json
+{
+  "status": "ok",
+  "service": "container-space-backend"
+}
+```
 
-Backend
+Backend root:
 
-Node.js
+https://container-space.onrender.com/
 
-Express
+Expected response:
 
-MongoDB (with Mongoose)
+```json
+{
+  "status": "ok",
+  "message": "Container Space API is running."
+}
+```
 
-JSON Web Tokens (JWT) for authentication
+> **Note:** `/api` by itself is not a GET endpoint, so opening `https://container-space.onrender.com/api` may show `Cannot GET /api`. This is expected.
 
-bcrypt.js for password hashing
+### Frontend
 
-Frontend
+**Vercel:** https://container-space.vercel.app/
 
-React (with Vite)
+The frontend communicates with the deployed backend through:
 
-React Router for page navigation
+```
+https://container-space.onrender.com/api
+```
 
-React Context for global state management (Auth)
+## ✨ Core Features
 
-Axios for API requests
+- **User Authentication** - JWT-based registration and login.
+- **Marketplace** - Browse and filter available container-space listings.
+- **Listing Management** - Authenticated users can create, view, and delete their listings.
+- **Pricing Tiers** - The Basic plan limits users to 5 free listings.
+- **Analytics Dashboard** - Protected dashboard for user statistics.
+- **AI Chatbot (ShipBot)** - Gemini-powered assistant for logistics, container space, pricing, and negotiation.
+- **MongoDB Atlas** - Persistent cloud database.
+- **Responsive React UI** - Vite-powered frontend application.
 
-Recharts for the analytics dashboard
+## 🤖 AI Chatbot Security
 
-Gemini API for the AI Chatbot
+ShipBot uses the Gemini API through the **backend**, not directly from the browser.
 
-How to Run This Project
+The Gemini API key must be stored only as a Render environment variable:
 
-You must have Node.js and a MongoDB Atlas account.
+```
+GEMINI_API_KEY=your_new_gemini_api_key
+```
 
-1. Backend Setup
+**Never put a Gemini API key directly inside `frontend/src/components/Chatbot.jsx` or commit it to GitHub.**
 
-Navigate to the backend folder:
+The frontend sends chat messages to:
 
+```
+POST /api/chat
+```
+
+The backend then communicates with Gemini using the secret API key.
+
+## 🛠️ Technology Stack
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JSON Web Tokens (JWT)
+- bcrypt.js
+- CORS
+- dotenv
+
+### Frontend
+
+- React
+- Vite
+- React Router
+- React Context API
+- Axios
+- Recharts
+
+### AI
+
+- Google Gemini API
+- Backend-protected Gemini API integration
+
+### Deployment
+
+- GitHub - source control
+- Render - backend deployment
+- Vercel - frontend deployment
+- MongoDB Atlas - cloud database
+
+## 📁 Project Structure
+
+```
+CONTAINER-SPACE/
+├── backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   │   ├── userRoutes.js
+│   │   ├── listingRoutes.js
+│   │   ├── analyticsRoutes.js
+│   │   └── chatRoutes.js
+│   ├── server.js
+│   ├── package.json
+│   └── .env
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   └── services/
+│   ├── package.json
+│   └── vite.config.js
+│
+└── README.md
+```
+
+## 🔌 Backend API Routes
+
+| Route | Purpose |
+|---|---|
+| `GET /` | Backend status |
+| `GET /api/health` | Health check |
+| `/api/users` | User registration/login |
+| `/api/listings` | Container-space listings |
+| `/api/analytics` | Analytics endpoints |
+| `POST /api/chat` | ShipBot/Gemini chatbot |
+
+## ⚙️ Local Setup
+
+### Prerequisites
+
+Install:
+
+- Node.js 18+
+- npm
+- MongoDB Atlas account
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/goel13188-byte/CONTAINER-SPACE.git
+cd CONTAINER-SPACE
+```
+
+### 2. Backend setup
+
+```bash
 cd backend
-
-
-Install dependencies:
-
 npm install
+```
 
+Create `backend/.env`:
 
-Create your environment file:
-Create a file named .env in the /backend folder and add your secrets:
-
+```env
 NODE_ENV=development
 PORT=5001
 MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=your_super_long_random_secret_key
+JWT_SECRET=your_super_long_random_secret
+GEMINI_API_KEY=your_gemini_api_key
+```
 
+Start the backend:
 
-Make sure your MongoDB Atlas "Network Access" list is updated to allow your IP address.
-
-Run the backend server:
-
+```bash
 npm run dev
+```
 
+The local backend runs on:
 
-Your backend will be running at  https://container-space.onrender.com/api
+```
+http://localhost:5001
+```
 
-2. Frontend Setup
+### 3. Frontend setup
 
-Open a new terminal.
+Open another terminal:
 
-Navigate to the frontend folder:
-
+```bash
 cd frontend
-
-
-Install dependencies:
-
 npm install
-npm install recharts
+```
 
+Start the frontend:
 
-Add your Chatbot API Key:
-Open frontend/src/components/Chatbot.jsx and add your Google AI Studio API key on line 4:
-
-const API_KEY = "YOUR_GEMINI_API_KEY_GOES_HERE";
-
-
-Run the frontend server:
-(If you are on Windows PowerShell, you may need to run Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass first.)
-
+```bash
 npm run dev
+```
 
+The Vite development server will display the local frontend URL.
 
-Your frontend will open at https://container-space.vercel.app/.
+## 🌐 Render Backend Deployment
+
+The backend is deployed on Render as a Node Web Service.
+
+### Render configuration
+
+**Repository:**
+
+```
+goel13188-byte/CONTAINER-SPACE
+```
+
+**Branch:**
+
+```
+main
+```
+
+**Root Directory:**
+
+```
+backend
+```
+
+**Build Command:**
+
+```
+npm install
+```
+
+**Start Command:**
+
+```
+npm start
+```
+
+### Render environment variables
+
+Configure these in **Render → Environment**:
+
+```
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_long_random_secret
+GEMINI_API_KEY=your_gemini_api_key
+NODE_ENV=production
+```
+
+Do not commit these secrets to GitHub.
+
+Render automatically provides the `PORT` environment variable, so a fixed production port does not need to be configured manually.
+
+### MongoDB Atlas network access
+
+For a Render deployment, MongoDB Atlas must allow the deployment to connect.
+
+The project currently uses an Atlas IP access configuration that permits Render connections.
+
+## 🧪 Deployment Verification
+
+After deploying the backend, verify:
+
+### Backend root
+
+```
+https://container-space.onrender.com/
+```
+
+Expected:
+
+```json
+{
+  "status": "ok",
+  "message": "Container Space API is running."
+}
+```
+
+### Health check
+
+```
+https://container-space.onrender.com/api/health
+```
+
+Expected:
+
+```json
+{
+  "status": "ok",
+  "service": "container-space-backend"
+}
+```
+
+### Render logs
+
+A successful backend deployment should contain messages similar to:
+
+```
+MongoDB Connected: ...
+Server running in production mode on port ...
+Your service is live
+```
+
+## 🔐 Security Notes
+
+- Never commit `.env` files.
+- Never expose `MONGO_URI`, `JWT_SECRET`, or `GEMINI_API_KEY`.
+- Gemini requests are routed through the backend so the API key is not exposed in the frontend.
+- If a secret is accidentally exposed, revoke/rotate it immediately.
+- Use strong, unique passwords for MongoDB and JWT secrets.
+
+## 📌 Important Deployment Note
+
+Render's free web services can spin down after inactivity. The first request after inactivity may therefore take longer than usual.
+
+## 👨‍💻 Project
+
+**ShipSpace - Container Space Optimization Platform**
+
+Built using the MERN stack with MongoDB Atlas, Render, Vercel, and Gemini AI.
