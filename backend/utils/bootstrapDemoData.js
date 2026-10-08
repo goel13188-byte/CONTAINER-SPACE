@@ -1,4 +1,6 @@
 import User from '../models/userModel.js';
+import Listing from '../models/listingModel.js';
+import Booking from '../models/bookingModel.js';
 
 const DEMO_USERS = [
   ['Aarav Sharma', 'demo01@shipspace.demo', 'BlueRoute Logistics'],
@@ -13,6 +15,15 @@ const DEMO_USERS = [
   ['Sara Khan', 'demo10@shipspace.demo', 'TransAxis'],
   ['Aditya Joshi', 'demo11@shipspace.demo', 'FreightFlow'],
   ['Kiara Patel', 'demo12@shipspace.demo', 'RouteCraft'],
+];
+
+const ROUTES = [
+  ['Mumbai', 'Dubai'],
+  ['Singapore', 'Rotterdam'],
+  ['Shanghai', 'Hamburg'],
+  ['Chennai', 'Colombo'],
+  ['Nhava Sheva', 'Jebel Ali'],
+  ['Kochi', 'Singapore'],
 ];
 
 const bootstrapDemoData = async () => {
@@ -48,8 +59,6 @@ const bootstrapDemoData = async () => {
     return;
   }
 
-  let created = 0;
-
   for (const [name, email, companyName] of DEMO_USERS) {
     if (await User.exists({ email })) continue;
 
@@ -62,11 +71,68 @@ const bootstrapDemoData = async () => {
       verificationStatus: 'verified',
       subscriptionTier: 'Basic',
     });
-
-    created += 1;
   }
 
-  console.log(`Demo user seed complete. Created ${created} new demo users.`);
+  const demoAccounts = await User.find({
+    email: { $in: DEMO_USERS.map(([, email]) => email) },
+  }).sort({ email: 1 });
+
+  let listingsCreated = 0;
+
+  for (let i = 0; i < demoAccounts.length; i += 1) {
+    const account = demoAccounts[i];
+    const existingCount = await Listing.countDocuments({ user: account._id });
+
+    if (existingCount >= 2) continue;
+
+    const needed = 2 - existingCount;
+
+    for (let j = 0; j < needed; j += 1) {
+      const route = ROUTES[(i + j) % ROUTES.length];
+      const listingNumber = existingCount + j + 1;
+
+      await Listing.create({
+        user: account._id,
+        companyName: account.companyName,
+        origin: route[0],
+        destination: route[1],
+        availableCBM: 6 + ((i * 2 + j * 3) % 10),
+        availableWeightKG: 1800 + ((i * 450 + j * 700) % 4200),
+        departureDate: new Date(Date.now() + (10 + i * 2 + j * 7) * 86400000),
+        pricePerCBM: 120 + ((i * 17 + j * 35) % 180),
+        cargoType: j % 2 === 0 ? 'General' : 'Food-Grade',
+      });
+
+      listingsCreated += 1;
+    }
+  }
+
+  // Create realistic demo purchase history once, so the admin can demonstrate spend analytics.
+  for (let i = 0; i < demoAccounts.length; i += 1) {
+    const buyer = demoAccounts[i];
+    const existingPurchase = await Booking.exists({ buyer: buyer._id });
+
+    if (existingPurchase) continue;
+
+    const seller = demoAccounts[(i + 1) % demoAccounts.length];
+    const listing = await Listing.findOne({ user: seller._id }).sort({ createdAt: 1 });
+
+    if (!listing) continue;
+
+    const quantityCBM = 1 + (i % 3);
+    const amount = Number((quantityCBM * listing.pricePerCBM).toFixed(2));
+
+    await Booking.create({
+      listing: listing._id,
+      buyer: buyer._id,
+      quantityCBM,
+      amount,
+      status: 'confirmed',
+      createdAt: new Date(Date.now() - (i + 1) * 86400000),
+    });
+  }
+
+  console.log(`Demo data ready. Added ${listingsCreated} listings and purchase history for admin analytics.`);
 };
 
 export default bootstrapDemoData;
