@@ -3,28 +3,43 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
-import listingRoutes from './routes/listingRoutes.js'; // Import listing routes
-import analyticsRoutes from './routes/analyticsRoutes.js'; // --- ADD THIS ---
+import listingRoutes from './routes/listingRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(express.json()); // To accept JSON data in the body
+app.use(cors());
+app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  res.json({ status: 'ok', message: 'Container Space API is running.' });
 });
 
-// Mount Routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', service: 'container-space-backend' });
+});
+
 app.use('/api/users', userRoutes);
-app.use('/api/listings', listingRoutes); // Add this line
-app.use('/api/analytics', analyticsRoutes); // --- ADD THIS ---
+app.use('/api/listings', listingRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 5001;
-app.listen(
-  PORT,
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
-);
+
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running in ${process.env.NODE_ENV || 'production'} mode on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Server startup failed:', error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
