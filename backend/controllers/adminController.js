@@ -1,4 +1,6 @@
 import User from '../models/userModel.js';
+import Listing from '../models/listingModel.js';
+import Booking from '../models/bookingModel.js';
 
 // @route GET /api/admin/users
 const listUsers = async (req, res) => {
@@ -11,6 +13,59 @@ const listUsers = async (req, res) => {
   } catch (error) {
     console.error('Admin list users error:', error);
     res.status(500).json({ message: 'Unable to load users.' });
+  }
+};
+
+// @route GET /api/admin/users/:id/overview
+const getUserOverview = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const [listings, purchases] = await Promise.all([
+      Listing.find({ user: user._id }).sort({ createdAt: -1 }),
+      Booking.find({ buyer: user._id })
+        .populate('listing', 'origin destination companyName pricePerCBM departureDate')
+        .sort({ createdAt: -1 }),
+    ]);
+
+    const totalListedValue = listings.reduce(
+      (sum, item) => sum + Number(item.availableCBM || 0) * Number(item.pricePerCBM || 0),
+      0
+    );
+    const totalListedCBM = listings.reduce(
+      (sum, item) => sum + Number(item.availableCBM || 0),
+      0
+    );
+    const totalSpent = purchases
+      .filter((item) => item.status !== 'cancelled')
+      .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const totalPurchasedCBM = purchases
+      .filter((item) => item.status !== 'cancelled')
+      .reduce((sum, item) => sum + Number(item.quantityCBM || 0), 0);
+
+    res.json({
+      user,
+      summary: {
+        listingCount: listings.length,
+        totalListedCBM,
+        averageListingPrice: listings.length
+          ? totalListedValue / Math.max(totalListedCBM, 1)
+          : 0,
+        totalListedValue,
+        purchaseCount: purchases.filter((item) => item.status !== 'cancelled').length,
+        totalPurchasedCBM,
+        totalSpent,
+      },
+      listings,
+      purchases,
+    });
+  } catch (error) {
+    console.error('Admin user overview error:', error);
+    res.status(500).json({ message: 'Unable to load user activity.' });
   }
 };
 
@@ -69,4 +124,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export { listUsers, updateRole, resetPassword };
+export { listUsers, getUserOverview, updateRole, resetPassword };
