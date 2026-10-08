@@ -52,7 +52,7 @@ const FindSpacePage = () => {
     <div>
       <div className="hero-section" style={{ padding: '2rem 0' }}>
         <h1>Find Available Space</h1>
-        <p>Browse all active listings on the marketplace.</p>
+        <p>Browse verified container space from the ShipSpace marketplace.</p>
 
         {/* Updated search bar form */}
         <form className="search-bar" onSubmit={handleSearch}>
@@ -73,6 +73,8 @@ const FindSpacePage = () => {
           </button>
         </form>
       </div>
+
+      {!loading && !error && <div className="listing-results-meta"><strong>{filteredListings.length}</strong> spaces available <span>•</span> {listings.length} total marketplace listings</div>}
 
       {loading && <p>Loading listings...</p>}
       {error && <p className="message-error">{error}</p>}
