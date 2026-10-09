@@ -422,6 +422,47 @@ SEED_DEMO_USERS=true
 
 Never commit these values to GitHub.
 
+
+## Phase 2 — Marketplace Operations
+
+The marketplace now includes a booking-request workflow, buyer/seller messaging, notifications, and a printable invoice view.
+
+### Booking lifecycle
+
+1. A buyer submits a request from a listing details page.
+2. The seller sees it under **Dashboard → Incoming booking requests**.
+3. The seller can accept or decline a pending request. Accepting reserves the requested CBM from the listing's available capacity.
+4. Buyers can cancel pending or accepted bookings while payment is still unpaid. Cancelling an accepted unpaid request releases its reserved capacity.
+5. The dashboard provides a **Pay & confirm** entry point. **Online payment is intentionally disabled for now**; the API does not create payment orders or mark bookings paid. Do not treat an accepted booking as a paid reservation.
+6. An invoice view is available only when a booking's payment status has been set to `paid` by a future verified payment integration. It cannot be used to fabricate a paid invoice.
+
+### Messaging and notifications
+
+- Authenticated booking participants can send and read messages at `/messages/:bookingId`.
+- The navigation notification inbox shows recent notifications and unread counts.
+- Notifications are created for new booking requests, seller decisions, and new messages.
+- A user can only read a conversation when they are the buyer or seller on that booking.
+
+### Additional API endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/api/bookings` | Submit a booking request |
+| `GET` | `/api/bookings/mine` | Buyer's booking history |
+| `GET` | `/api/bookings/incoming` | Seller's incoming requests |
+| `PATCH` | `/api/bookings/:id/status` | Accept, decline, or cancel a booking |
+| `POST` | `/api/bookings/:id/payment/order` | Reserved payment entry point; currently disabled |
+| `POST` | `/api/bookings/:id/payment/verify` | Reserved verification entry point; currently disabled |
+| `GET` | `/api/bookings/:id/invoice` | Retrieve a paid booking invoice |
+| `GET` | `/api/notifications` | List notifications and unread count |
+| `PATCH` | `/api/notifications/:id/read` | Mark one notification as read |
+| `PATCH` | `/api/notifications/read-all` | Mark all notifications as read |
+| `GET` | `/api/messages/:bookingId` | Read a booking conversation |
+| `POST` | `/api/messages/:bookingId` | Send a message in a booking conversation |
+| `GET` | `/api/messages/unread-count` | Count unread messages |
+
+All booking, notification, and messaging endpoints require a valid JWT bearer token. Payment is deliberately not enabled until a gateway is configured and payment signatures can be verified server-side.
+
 ## 🤖 ShipBot troubleshooting
 
 Check:
