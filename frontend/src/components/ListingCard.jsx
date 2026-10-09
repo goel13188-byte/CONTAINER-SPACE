@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import api from '../services/api';
+import { Link } from 'react-router-dom';
 import AuthContext from '../state/AuthContext';
 
 const ListingCard = ({ listing }) => {
@@ -33,6 +34,7 @@ const ListingCard = ({ listing }) => {
         <p><strong>Cargo</strong><span className="cargo-badge">{listing.cargoType}</span></p>
       </div>
       <div className="card-footer">
+        <Link className="btn btn-outline listing-details-link" to={`/listing/${listing._id}`}>View details</Link>
         <button className="btn" onClick={handleBook} disabled={booking}>{booking ? 'Booking…' : 'Book 1 CBM'}</button>
         {message && <span className="booking-message">{message}</span>}
       </div>
