@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import api from './services/api';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -15,6 +16,14 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import Chatbot from './components/Chatbot';
 
 function App() {
+  // Wake the Render free-tier API while the user browses the site, rather than
+  // making the login request pay the entire cold-start delay.
+  useEffect(() => {
+    api.get('/health', { timeout: 90000 }).catch(() => {
+      // A failed warm-up should never prevent the frontend from rendering.
+    });
+  }, []);
+
   return (
     <>
       <Navbar />
