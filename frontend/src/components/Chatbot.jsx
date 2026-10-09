@@ -31,6 +31,7 @@ const Chatbot = () => {
     try {
       const chatHistory = newMessages
         .filter((msg) => msg.text && (msg.sender === 'user' || msg.sender === 'bot'))
+        .slice(-8)
         .map((msg) => ({
           role: msg.sender === 'bot' ? 'model' : 'user',
           text: msg.text,
@@ -38,7 +39,7 @@ const Chatbot = () => {
 
       const { data } = await api.post('/chat', {
         messages: chatHistory,
-      });
+      }, { timeout: 30000 });
 
       const botResponse =
         data?.candidates?.[0]?.content?.parts?.[0]?.text ||
@@ -52,7 +53,9 @@ const Chatbot = () => {
       console.error('Chatbot request failed:', error);
       const message =
         error?.response?.data?.message ||
-        'Chatbot is temporarily unavailable. Please try again.';
+        error?.code === 'ECONNABORTED'
+          ? 'ShipBot is taking too long to respond. Please try again.'
+          : 'Chatbot is temporarily unavailable. Please try again.';
 
       setMessages((prev) => [
         ...prev,
