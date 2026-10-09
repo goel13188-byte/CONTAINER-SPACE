@@ -125,9 +125,11 @@ const bootstrapDemoData = async () => {
     await Booking.create({
       listing: listing._id,
       buyer: buyer._id,
+      seller: listing.user,
       quantityCBM,
       amount,
       status: 'confirmed',
+      paymentStatus: 'unpaid',
       createdAt: new Date(Date.now() - (i + 1) * 86400000),
     });
   }
