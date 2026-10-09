@@ -21,7 +21,7 @@ const createBooking=async(req,res)=>{
  }catch(e){console.error('Booking request error:',e.message);res.status(500).json({message:'Unable to submit booking request.'});}
 };
 const getMyBookings=async(req,res)=>{
- try{const bookings=await Booking.find({buyer:req.user._id}).populate('listing','origin destination pricePerCBM companyName departureDate').populate('seller','name companyName').sort({createdAt:-1});res.json(bookings);}
+ try{const bookings=await Booking.find({buyer:req.user._id}).populate('listing','origin destination pricePerCBM companyName departureDate').populate('seller','name companyName').populate('buyer','name companyName email').sort({createdAt:-1});res.json(bookings);}
  catch(e){console.error('Buyer bookings error:',e.message);res.status(500).json({message:'Unable to load bookings.'});}
 };
 const getSellerBookings=async(req,res)=>{
