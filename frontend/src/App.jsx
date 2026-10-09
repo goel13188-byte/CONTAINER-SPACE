@@ -16,6 +16,8 @@ import CreateListingPage from './pages/CreateListingPage';
 import PricingPage from './pages/PricingPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import Chatbot from './components/Chatbot';
+import MessagesPage from './pages/MessagesPage';
+import InvoicePage from './pages/InvoicePage';
 
 function App() {
   // Wake the Render free-tier API while the user browses the site, rather than
@@ -42,6 +44,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/create-listing" element={<CreateListingPage />} />
+            <Route path="/messages/:bookingId" element={<MessagesPage />} />
+            <Route path="/invoice/:bookingId" element={<InvoicePage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
           </Route>
 
