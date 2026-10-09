@@ -108,8 +108,22 @@ const AdminPage = () => {
           <div className="mini-kpi"><span>Potential commission</span><strong>{money(platform?.potentialFee)}</strong><small>estimate from active unpaid requests</small></div>
           <div className="mini-kpi"><span>Marketplace activity</span><strong>{platform?.bookingCount ?? 0}</strong><small>{platform?.usersCount ?? users.length} users · {platform?.listingsCount ?? 0} listings</small></div>
         </div>
+        <div className="admin-card" style={{ marginTop: 18, background: 'rgba(124, 92, 255, 0.08)', border: '1px solid rgba(124, 92, 255, 0.25)' }}>
+          <div className="admin-section-heading">
+            <div>
+              <span className="eyebrow dark">HACKATHON DEMO · SIMULATED</span>
+              <h3 style={{ marginTop: 6 }}>Demo marketplace commission</h3>
+              <p style={{ marginTop: 6 }}>Illustrative 2% owner share calculated from seeded demo-user bookings. This is not real collected revenue.</p>
+            </div>
+          </div>
+          <div className="detail-kpis" style={{ marginTop: 14 }}>
+            <div className="mini-kpi accent"><span>Simulated commission</span><strong>{money(platform?.demoCommission)}</strong><small>{platform?.demoBookingCount ?? 0} sample bookings</small></div>
+            <div className="mini-kpi"><span>Simulated booking value</span><strong>{money(platform?.demoGross)}</strong><small>demo buyers and sellers only</small></div>
+          </div>
+          {!(platform?.demoBookingCount > 0) && <p className="admin-table-hint" style={{ marginTop: 12 }}>No demo bookings found yet. Set SEED_DEMO_USERS=true in Render, deploy once, then refresh this panel.</p>}
+        </div>
         <p className="admin-table-hint" style={{ marginTop: 14 }}>
-          Payment checkout is still disabled. Therefore demo requests contribute only to the potential commission estimate; actual earned commission stays $0 until a real payment is verified.
+          Real earned commission remains separate and only counts verified paid transactions. Demo figures are clearly marked as simulated for presentation purposes.
         </p>
         <div style={{ overflowX: 'auto', marginTop: 18 }}>
           <table className="admin-table">
