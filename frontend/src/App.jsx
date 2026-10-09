@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import FindSpacePage from './pages/FindSpacePage';
 import ListingDetailsPage from './pages/ListingDetailsPage';
+import SellerProfilePage from './pages/SellerProfilePage';
 import DashboardPage from './pages/DashboardPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/find-space" element={<FindSpacePage />} />
           <Route path="/listing/:id" element={<ListingDetailsPage />} />
+          <Route path="/company/:id" element={<SellerProfilePage />} />
           <Route path="/pricing" element={<PricingPage />} />
 
           <Route element={<ProtectedRoute />}>
