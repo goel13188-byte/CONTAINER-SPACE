@@ -132,7 +132,7 @@ const getPlatformAnalytics = async (req, res) => {
       ? configuredRate
       : 2;
 
-    const [usersCount, listingsCount, bookings, recentBookings] = await Promise.all([
+    const [usersCount, listingsCount, bookings, recentBookings, demoUsers] = await Promise.all([
       User.countDocuments({}),
       Listing.countDocuments({}),
       Booking.find({}).select('amount status paymentStatus createdAt'),
@@ -142,6 +142,7 @@ const getPlatformAnalytics = async (req, res) => {
         .populate('listing', 'origin destination')
         .sort({ createdAt: -1 })
         .limit(12),
+      User.find({ email: { $regex: /^demo\\d+@shipspace\\.demo$/i } }).select('_id email name companyName'),
     ]);
 
     const paidBookings = bookings.filter(item => item.paymentStatus === 'paid' && item.status === 'confirmed');
@@ -153,8 +154,30 @@ const getPlatformAnalytics = async (req, res) => {
     const platformRevenue = paidGross * feePercent / 100;
     const potentialFee = estimatedGross * feePercent / 100;
 
+    // Hackathon presentation metrics are deliberately separate from real revenue.
+    // They use seeded demo-account bookings as if each non-cancelled/non-rejected
+    // request were a completed sample transaction; no payment status is changed.
+    const demoUserIds = demoUsers.map(user => String(user._id));
+    const demoBookings = await Booking.find({
+      buyer: { $in: demoUserIds },
+      seller: { $in: demoUserIds },
+      status: { $nin: ['cancelled', 'rejected'] },
+    })
+      .populate('buyer', 'name email')
+      .populate('seller', 'name companyName')
+      .populate('listing', 'origin destination')
+      .sort({ createdAt: -1 })
+      .limit(50);
+    const demoGross = demoBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const demoCommission = demoGross * feePercent / 100;
+
     res.json({
       feePercent,
+      demoMode: true,
+      demoBookingCount: demoBookings.length,
+      demoGross: Number(demoGross.toFixed(2)),
+      demoCommission: Number(demoCommission.toFixed(2)),
+      demoBookings,
       usersCount,
       listingsCount,
       bookingCount: bookings.length,
