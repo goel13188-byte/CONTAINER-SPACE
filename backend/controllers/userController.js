@@ -1,5 +1,7 @@
 import User from '../models/userModel.js';
 import generateToken from '../utils/generateToken.js';
+import Listing from '../models/listingModel.js';
+import Review from '../models/reviewModel.js';
 
 // @desc    Register a new user
 // @route   POST /api/users/register
@@ -65,4 +67,18 @@ const authUser = async (req, res) => {
   }
 };
 
-export { registerUser, authUser };
+const getPublicProfile = async (req,res) => {
+ try {
+  if (!/^[0-9a-fA-F]{24}$/.test(req.params.id)) return res.status(400).json({message:'Invalid company profile ID.'});
+  const user=await User.findById(req.params.id).select('name companyName verificationStatus subscriptionTier createdAt');
+  if(!user)return res.status(404).json({message:'Company not found.'});
+  const [listings,reviews]=await Promise.all([
+   Listing.find({user:user._id}).sort({createdAt:-1}).select('origin destination availableCBM availableWeightKG departureDate pricePerCBM cargoType createdAt'),
+   Review.find({seller:user._id}).populate('reviewer','name companyName').sort({createdAt:-1}).limit(20)
+  ]);
+  const ratings=await Review.find({seller:user._id}).select('rating');
+  const averageRating=ratings.length?Number((ratings.reduce((s,r)=>s+r.rating,0)/ratings.length).toFixed(1)):null;
+  res.json({user,listings,reviews,reviewCount:ratings.length,averageRating});
+ } catch(e){console.error('Public profile error:',e.message);res.status(500).json({message:'Unable to load company profile.'});}
+};
+export { registerUser, authUser, getPublicProfile };
