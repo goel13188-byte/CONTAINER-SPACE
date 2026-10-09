@@ -13,6 +13,12 @@ const ListingDetailsPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [booking, setBooking] = useState(false);
   const [message, setMessage] = useState('');
+  const [reviews, setReviews] = useState([]);
+  const [reviewSummary, setReviewSummary] = useState({ averageRating: null, reviewCount: 0 });
+  const [rating, setRating] = useState('5');
+  const [comment, setComment] = useState('');
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [reviewBusy, setReviewBusy] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -25,6 +31,28 @@ const ListingDetailsPage = () => {
   }, [id]);
 
   const sellerId = listing?.user?._id || listing?.user;
+  useEffect(() => {
+    if (!sellerId) return;
+    api.get('/reviews/seller/' + sellerId).then(({ data }) => {
+      setReviews(data.reviews || []);
+      setReviewSummary({ averageRating: data.averageRating, reviewCount: data.reviewCount || 0 });
+    }).catch(() => {});
+  }, [sellerId]);
+
+  const submitReview = async (event) => {
+    event.preventDefault();
+    if (!user) { navigate('/login'); return; }
+    try {
+      setReviewBusy(true); setReviewMessage('');
+      await api.post('/reviews', { listingId: listing._id, rating: Number(rating), comment });
+      const { data } = await api.get('/reviews/seller/' + sellerId);
+      setReviews(data.reviews || []);
+      setReviewSummary({ averageRating: data.averageRating, reviewCount: data.reviewCount || 0 });
+      setComment(''); setReviewMessage('Review saved successfully.');
+    } catch (err) {
+      setReviewMessage(err?.response?.data?.message || 'Unable to save review.');
+    } finally { setReviewBusy(false); }
+  };
   const isOwner = user && String(sellerId) === String(user._id);
   const total = Number(listing?.pricePerCBM || 0) * Number(quantity || 0);
 
@@ -87,11 +115,25 @@ const ListingDetailsPage = () => {
               <div className="seller-avatar">{(listing.companyName || 'S').slice(0, 1).toUpperCase()}</div>
               <div>
                 <h3>{listing.companyName || seller?.companyName || 'Shipping company'}</h3>
+                {seller?._id && <Link className="seller-profile-link" to={'/company/' + seller._id}>View company profile ↗</Link>}
                 <p>{seller?.name ? `Listed by ${seller.name}` : 'Marketplace seller'}</p>
                 {seller?.verificationStatus === 'verified' && <span className="verified-label">✓ Verified account</span>}
               </div>
             </div>
             <p className="seller-note">Seller information is limited to the public profile details currently available on ShipSpace.</p>
+          </article>
+          <article className="details-panel glass-panel reviews-panel">
+            <div className="dashboard-section-heading"><div><span className="eyebrow">COMMUNITY FEEDBACK</span><h2>Reviews & ratings</h2></div><strong className="rating-summary">{reviewSummary.averageRating ? '★ ' + reviewSummary.averageRating + ' / 5' : 'Not rated yet'} <small>({reviewSummary.reviewCount})</small></strong></div>
+            {user && !isOwner && <form className="review-form" onSubmit={submitReview}>
+              <label htmlFor="review-rating">Your rating</label>
+              <select id="review-rating" value={rating} onChange={e => setRating(e.target.value)}><option value="5">★★★★★ — Excellent</option><option value="4">★★★★ — Good</option><option value="3">★★★ — Average</option><option value="2">★★ — Poor</option><option value="1">★ — Very poor</option></select>
+              <label htmlFor="review-comment">Your review</label>
+              <textarea id="review-comment" rows="3" maxLength="1000" placeholder="Share your experience with this listing and seller…" value={comment} onChange={e => setComment(e.target.value)} required />
+              <button className="btn" disabled={reviewBusy}>{reviewBusy ? 'Submitting…' : 'Submit review'}</button>
+              {reviewMessage && <p>{reviewMessage}</p>}
+            </form>}
+            {!user && <p><Link to="/login">Log in</Link> to leave a review.</p>}
+            {reviews.length === 0 ? <p>No reviews yet. Be the first to share feedback.</p> : <div className="reviews-list">{reviews.map(review => <div className="review-item" key={review._id}><div><strong>{review.reviewer?.companyName || review.reviewer?.name || 'ShipSpace user'}</strong><span className="review-stars">{'★'.repeat(review.rating)}{'☆'.repeat(5-review.rating)}</span></div><p>{review.comment}</p><small>{new Date(review.createdAt).toLocaleDateString()}</small></div>)}</div>}
           </article>
         </div>
 
