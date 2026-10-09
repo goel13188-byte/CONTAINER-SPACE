@@ -52,6 +52,17 @@ const bootstrapDemoData = async () => {
     }
   }
 
+  // Backfill legacy bookings created before seller/payment fields were added.
+  // This keeps old demo booking records usable in the buyer/seller workspace.
+  const legacyBookings = await Booking.find({ $or: [{ seller: { $exists: false } }, { seller: null }] });
+  for (const booking of legacyBookings) {
+    const listing = await Listing.findById(booking.listing).select('user');
+    if (!listing) continue;
+    booking.seller = listing.user;
+    if (!booking.paymentStatus) booking.paymentStatus = 'unpaid';
+    await booking.save();
+  }
+
   if (!seedDemoUsers) return;
 
   if (!demoPassword || demoPassword.length < 6) {
