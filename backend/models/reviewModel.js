@@ -1,0 +1,10 @@
+import mongoose from 'mongoose';
+const reviewSchema=mongoose.Schema({
+ listing:{type:mongoose.Schema.Types.ObjectId,ref:'Listing',required:true,index:true},
+ seller:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true,index:true},
+ reviewer:{type:mongoose.Schema.Types.ObjectId,ref:'User',required:true},
+ rating:{type:Number,required:true,min:1,max:5},
+ comment:{type:String,required:true,trim:true,maxlength:1000}
+},{timestamps:true});
+reviewSchema.index({listing:1,reviewer:1},{unique:true});
+export default mongoose.model('Review',reviewSchema);
