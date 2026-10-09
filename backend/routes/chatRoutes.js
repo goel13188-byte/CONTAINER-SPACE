@@ -12,7 +12,7 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     configured: Boolean(process.env.GEMINI_API_KEY),
-    model: 'gemini-3.8-flash',
+    model: 'gemini-2.5-flash',
   });
 });
 
@@ -51,14 +51,16 @@ router.post('/', async (req, res) => {
     }
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-goog-api-key': process.env.GEMINI_API_KEY,
         },
-        body: JSON.stringify({
+        signal: AbortSignal.timeout(25000),
+      body: JSON.stringify({
+          generationConfig: { maxOutputTokens: 512, temperature: 0.4 },
           systemInstruction: {
             parts: [{ text: SYSTEM_INSTRUCTION }],
           },
@@ -79,8 +81,11 @@ router.post('/', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Chatbot error:', error);
-    res.status(500).json({
-      message: 'Unable to contact ShipBot right now. Please try again.',
+    const timedOut = error?.name === 'TimeoutError' || error?.name === 'AbortError';
+    res.status(timedOut ? 504 : 500).json({
+      message: timedOut
+        ? 'ShipBot took too long to respond. Please try again.'
+        : 'Unable to contact ShipBot right now. Please try again.',
     });
   }
 });
