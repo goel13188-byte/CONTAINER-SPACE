@@ -170,6 +170,23 @@ const getPlatformAnalytics = async (req, res) => {
       .limit(50);
     const demoGross = demoBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0);
     const demoCommission = demoGross * feePercent / 100;
+    const demoBookedCBM = demoBookings.reduce((sum, item) => sum + Number(item.quantityCBM || 0), 0);
+    const demoCarbonSaved = demoBookedCBM * 0.015;
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const transactionTrend = [];
+    const commissionTrend = [];
+    const carbonTrend = [];
+    const now = new Date();
+    for (let offset = 5; offset >= 0; offset -= 1) {
+      const start = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - offset + 1, 1);
+      const monthly = demoBookings.filter(item => new Date(item.createdAt) >= start && new Date(item.createdAt) < end);
+      const gross = monthly.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+      const cbm = monthly.reduce((sum, item) => sum + Number(item.quantityCBM || 0), 0);
+      transactionTrend.push({ month: monthNames[start.getMonth()], value: Number(gross.toFixed(2)) });
+      commissionTrend.push({ month: monthNames[start.getMonth()], value: Number((gross * feePercent / 100).toFixed(2)) });
+      carbonTrend.push({ month: monthNames[start.getMonth()], value: Number((cbm * 0.015).toFixed(3)) });
+    }
 
     res.json({
       feePercent,
@@ -177,6 +194,11 @@ const getPlatformAnalytics = async (req, res) => {
       demoBookingCount: demoBookings.length,
       demoGross: Number(demoGross.toFixed(2)),
       demoCommission: Number(demoCommission.toFixed(2)),
+      demoBookedCBM: Number(demoBookedCBM.toFixed(2)),
+      demoCarbonSaved: Number(demoCarbonSaved.toFixed(3)),
+      transactionTrend,
+      commissionTrend,
+      carbonTrend,
       demoBookings,
       usersCount,
       listingsCount,
