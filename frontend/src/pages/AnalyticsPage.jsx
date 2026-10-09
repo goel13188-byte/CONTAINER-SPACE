@@ -1,11 +1,13 @@
-import React,{useEffect,useState} from 'react';
+import React,{useContext,useEffect,useState} from 'react';
+import AuthContext from '../state/AuthContext';
+import AdminAnalyticsPage from './AdminAnalyticsPage';
 import {AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,BarChart,Bar,Cell} from 'recharts';
 import {Link} from 'react-router-dom';
 import api from '../services/api';
 
 const money=v=>'$'+Number(v||0).toLocaleString(undefined,{maximumFractionDigits:0});
 const CustomTooltip=({active,payload,label})=>active&&payload?.length?<div className="analytics-tooltip"><span>{label}</span><strong>{money(payload[0].value)}</strong></div>:null;
-const AnalyticsPage=()=>{
+const UserAnalyticsPage=()=>{
  const [stats,setStats]=useState(null);const [loading,setLoading]=useState(true);const [error,setError]=useState('');
  useEffect(()=>{let active=true;api.get('/analytics/stats').then(({data})=>{if(active)setStats(data);}).catch(e=>{if(active)setError(e?.response?.status===401?'Log in to view your private analytics.':'Could not load your analytics right now.');}).finally(()=>{if(active)setLoading(false);});return()=>{active=false;};},[]);
  if(loading)return <div className="analytics-page"><div className="analytics-loading glass-panel"><div className="loading-orb"/>Preparing your live workspace analytics…</div></div>;
@@ -39,4 +41,9 @@ const AnalyticsPage=()=>{
   <footer className="analytics-footnote">Metrics are calculated from your current ShipSpace account data. Revenue reflects successfully paid and verified bookings recorded in the system. <span>*CO₂ benefit is a rough illustrative estimate.</span></footer>
  </div>;
 };
+const AnalyticsPage = () => {
+ const { user } = useContext(AuthContext);
+ return user?.role === 'admin' ? <AdminAnalyticsPage /> : <UserAnalyticsPage />;
+};
+
 export default AnalyticsPage;
