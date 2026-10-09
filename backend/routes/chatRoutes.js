@@ -59,7 +59,7 @@ router.post('/', async (req, res) => {
           'x-goog-api-key': process.env.GEMINI_API_KEY,
         },
         signal: AbortSignal.timeout(25000),
-      body: JSON.stringify({
+        body: JSON.stringify({
           generationConfig: { maxOutputTokens: 512, temperature: 0.4 },
           systemInstruction: {
             parts: [{ text: SYSTEM_INSTRUCTION }],
