@@ -119,8 +119,17 @@ const bootstrapDemoData = async () => {
       paymentStatus: { $ne: 'paid' },
     }).sort({ createdAt: 1 });
     if (oldSeedBooking?.status === 'confirmed') {
-      oldSeedBooking.status = 'accepted';
-      await oldSeedBooking.save();
+      // These legacy sample records were never reserved against listing capacity.
+      const listing = await Listing.findOneAndUpdate(
+        { _id: oldSeedBooking.listing, availableCBM: { $gte: oldSeedBooking.quantityCBM } },
+        { $inc: { availableCBM: -oldSeedBooking.quantityCBM } },
+        { new: true }
+      );
+      if (listing) {
+        oldSeedBooking.status = 'accepted';
+        oldSeedBooking.paymentStatus = 'unpaid';
+        await oldSeedBooking.save();
+      }
     }
 
     const partners = [(i + 1) % demoAccounts.length, (i + 2) % demoAccounts.length];
