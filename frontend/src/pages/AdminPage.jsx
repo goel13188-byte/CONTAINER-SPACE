@@ -8,8 +8,6 @@ const money = (value) => `$${Number(value || 0).toLocaleString(undefined, {
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
-  const [platform, setPlatform] = useState(null);
-  const [platformError, setPlatformError] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,19 +28,8 @@ const AdminPage = () => {
     }
   };
 
-  const loadPlatform = async () => {
-    try {
-      const { data } = await api.get('/admin/analytics');
-      setPlatform(data);
-      setPlatformError('');
-    } catch (err) {
-      setPlatformError(err?.response?.data?.message || 'Unable to load platform earnings.');
-    }
-  };
-
   useEffect(() => {
     loadUsers();
-    loadPlatform();
   }, []);
 
   const openUser = async (id) => {
@@ -91,101 +78,6 @@ const AdminPage = () => {
         <strong>Security:</strong> passwords are never displayed. They are stored as secure hashes.
         Demo accounts use the password configured in Render.
       </div>
-
-      <section className="admin-card" style={{ marginBottom: 24 }}>
-        <div className="admin-section-heading">
-          <div>
-            <span className="eyebrow dark">PLATFORM OVERVIEW</span>
-            <h2>Marketplace performance</h2>
-            <p style={{ marginTop: 6 }}>Transactions, platform commission and estimated environmental impact across marketplace activity.</p>
-          </div>
-          <button className="admin-action" onClick={loadPlatform}>Refresh analytics</button>
-        </div>
-        {platformError && <p className="message-error">{platformError}</p>}
-
-        <div className="detail-kpis" style={{ marginTop: 16 }}>
-          <div className="mini-kpi"><span>Total users</span><strong>{platform?.usersCount ?? users.length}</strong><small>registered accounts</small></div>
-          <div className="mini-kpi"><span>Bookings</span><strong>{platform?.demoBookingCount ?? 0}</strong><small>marketplace booking activity</small></div>
-          <div className="mini-kpi"><span>Transaction value</span><strong>{money(platform?.demoGross)}</strong><small>eligible booking value</small></div>
-          <div className="mini-kpi accent"><span>Platform commission</span><strong>{money(platform?.demoCommission)}</strong><small>{platform?.feePercent ?? 2}% owner share estimate</small></div>
-          <div className="mini-kpi"><span>CO₂ impact</span><strong>{Number(platform?.demoCarbonSaved || 0).toFixed(2)} t</strong><small>estimated from booked CBM</small></div>
-          <div className="mini-kpi"><span>Listings</span><strong>{platform?.listingsCount ?? 0}</strong><small>published across the platform</small></div>
-        </div>
-
-        <div className="admin-layout" style={{ marginTop: 18 }}>
-          <div className="admin-card chart-panel">
-            <div className="chart-heading">
-              <div><span className="eyebrow dark">TRANSACTION TREND</span><h3>Booking value by month</h3></div>
-              <strong>{money(platform?.demoGross)}</strong>
-            </div>
-            <div className="bar-chart">
-              {(platform?.transactionTrend || []).map((point) => {
-                const max = Math.max(1, ...(platform?.transactionTrend || []).map((p) => p.value));
-                return <div className="bar-item" key={point.month}>
-                  <div className="bar-value">{money(point.value)}</div>
-                  <div className="bar-track"><div className="bar-fill" style={{ height: `${Math.max(point.value > 0 ? 8 : 2, (point.value / max) * 100)}%` }} /></div>
-                  <span>{point.month}</span>
-                </div>;
-              })}
-            </div>
-          </div>
-          <div className="admin-card chart-panel">
-            <div className="chart-heading">
-              <div><span className="eyebrow dark">OWNER SHARE</span><h3>Commission by month</h3></div>
-              <strong>{money(platform?.demoCommission)}</strong>
-            </div>
-            <div className="bar-chart">
-              {(platform?.commissionTrend || []).map((point) => {
-                const max = Math.max(1, ...(platform?.commissionTrend || []).map((p) => p.value));
-                return <div className="bar-item" key={point.month}>
-                  <div className="bar-value">{money(point.value)}</div>
-                  <div className="bar-track spend"><div className="bar-fill spend" style={{ height: `${Math.max(point.value > 0 ? 8 : 2, (point.value / max) * 100)}%` }} /></div>
-                  <span>{point.month}</span>
-                </div>;
-              })}
-            </div>
-          </div>
-        </div>
-
-        <div className="admin-card chart-panel" style={{ marginTop: 18 }}>
-          <div className="chart-heading">
-            <div><span className="eyebrow dark">SUSTAINABILITY</span><h3>Estimated CO₂ savings by month</h3></div>
-            <strong>{Number(platform?.demoCarbonSaved || 0).toFixed(2)} t</strong>
-          </div>
-          <div className="bar-chart">
-            {(platform?.carbonTrend || []).map((point) => {
-              const max = Math.max(0.001, ...(platform?.carbonTrend || []).map((p) => p.value));
-              return <div className="bar-item" key={point.month}>
-                <div className="bar-value">{point.value.toFixed(3)} t</div>
-                <div className="bar-track"><div className="bar-fill" style={{ height: `${Math.max(point.value > 0 ? 8 : 2, (point.value / max) * 100)}%` }} /></div>
-                <span>{point.month}</span>
-              </div>;
-            })}
-          </div>
-          <p className="admin-table-hint" style={{ marginTop: 12 }}>CO₂ is an indicative estimate derived from booked container volume, not a verified emissions audit.</p>
-        </div>
-
-        <div style={{ overflowX: 'auto', marginTop: 18 }}>
-          <div className="chart-heading"><div><span className="eyebrow dark">RECENT ACTIVITY</span><h3>Marketplace transactions</h3></div></div>
-          <table className="admin-table">
-            <thead><tr><th>Date</th><th>Buyer</th><th>Seller</th><th>Route</th><th>Value</th><th>Status</th><th>Owner share</th></tr></thead>
-            <tbody>
-              {(platform?.demoBookings || []).length ? platform.demoBookings.slice(0, 12).map((booking) => (
-                <tr key={booking._id}>
-                  <td>{new Date(booking.createdAt).toLocaleDateString()}</td>
-                  <td>{booking.buyer?.name || 'Marketplace buyer'}</td>
-                  <td>{booking.seller?.companyName || booking.seller?.name || 'Marketplace seller'}</td>
-                  <td>{booking.listing ? `${booking.listing.origin} → ${booking.listing.destination}` : 'Container space'}</td>
-                  <td>{money(booking.amount)}</td>
-                  <td><span className={`role-pill ${booking.status === 'accepted' ? 'admin' : 'user'}`}>{booking.status}</span></td>
-                  <td>{money(Number(booking.amount || 0) * Number(platform?.feePercent ?? 2) / 100)}</td>
-                </tr>
-              )) : <tr><td colSpan="7">No marketplace booking activity found. Check that the sample accounts and bookings have been seeded.</td></tr>}
-            </tbody>
-          </table>
-        </div>
-        <p className="admin-table-hint" style={{ marginTop: 12 }}>Commission and transaction totals are calculated from marketplace booking records for presentation analytics. Actual payment collection remains disabled until the payment gateway is implemented.</p>
-      </section>
 
       {message && <div className="message-success">{message}</div>}
       {error && <div className="message-error">{error}</div>}
