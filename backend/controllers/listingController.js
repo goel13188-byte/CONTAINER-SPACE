@@ -13,6 +13,24 @@ const getListings = async (req, res) => {
   }
 };
 
+// @desc    Get one listing with public seller details
+// @route   GET /api/listings/:id
+// @access  Public
+const getListingById = async (req, res) => {
+  try {
+    if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: 'Invalid listing ID.' });
+    }
+    const listing = await Listing.findById(req.params.id)
+      .populate('user', 'name companyName verificationStatus subscriptionTier createdAt');
+    if (!listing) return res.status(404).json({ message: 'Listing not found.' });
+    res.json(listing);
+  } catch (error) {
+    console.error('Get listing details error:', error.message);
+    res.status(500).json({ message: 'Unable to load listing details.' });
+  }
+};
+
 // @desc    Get listings for the logged-in user
 // @route   GET /api/listings/mylistings
 // @access  Private
@@ -99,4 +117,4 @@ const deleteListing = async (req, res) => {
 };
 
 
-export { getListings, getMyListings, createListing, deleteListing };
+export { getListings, getListingById, getMyListings, createListing, deleteListing };
