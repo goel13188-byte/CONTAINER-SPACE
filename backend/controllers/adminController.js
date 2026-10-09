@@ -142,7 +142,7 @@ const getPlatformAnalytics = async (req, res) => {
         .populate('listing', 'origin destination')
         .sort({ createdAt: -1 })
         .limit(12),
-      User.find({ email: { $regex: /^demo\\d+@shipspace\\.demo$/i } }).select('_id email name companyName'),
+      User.find({ email: { $regex: /^demo\d+@shipspace\.demo$/i } }).select('_id email name companyName'),
     ]);
 
     const paidBookings = bookings.filter(item => item.paymentStatus === 'paid' && item.status === 'confirmed');
