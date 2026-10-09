@@ -1,6 +1,8 @@
 import User from '../models/userModel.js';
 import Listing from '../models/listingModel.js';
 import Booking from '../models/bookingModel.js';
+import Notification from '../models/notificationModel.js';
+import Message from '../models/messageModel.js';
 
 const DEMO_USERS = [
   ['Aarav Sharma', 'demo01@shipspace.demo', 'BlueRoute Logistics'],
@@ -34,7 +36,6 @@ const bootstrapDemoData = async () => {
 
   if (adminEmail && adminPassword) {
     const existingAdmin = await User.findOne({ email: adminEmail });
-
     if (!existingAdmin) {
       await User.create({
         name: 'ShipSpace Administrator',
@@ -53,7 +54,6 @@ const bootstrapDemoData = async () => {
   }
 
   // Backfill legacy bookings created before seller/payment fields were added.
-  // This keeps old demo booking records usable in the buyer/seller workspace.
   const legacyBookings = await Booking.find({ $or: [{ seller: { $exists: false } }, { seller: null }] });
   for (const booking of legacyBookings) {
     const listing = await Listing.findById(booking.listing).select('user');
@@ -64,7 +64,6 @@ const bootstrapDemoData = async () => {
   }
 
   if (!seedDemoUsers) return;
-
   if (!demoPassword || demoPassword.length < 6) {
     console.warn('SEED_DEMO_USERS=true but DEMO_USER_PASSWORD is missing or too short.');
     return;
@@ -72,7 +71,6 @@ const bootstrapDemoData = async () => {
 
   for (const [name, email, companyName] of DEMO_USERS) {
     if (await User.exists({ email })) continue;
-
     await User.create({
       name,
       email,
@@ -84,24 +82,15 @@ const bootstrapDemoData = async () => {
     });
   }
 
-  const demoAccounts = await User.find({
-    email: { $in: DEMO_USERS.map(([, email]) => email) },
-  }).sort({ email: 1 });
-
+  const demoAccounts = await User.find({ email: { $in: DEMO_USERS.map(([, email]) => email) } }).sort({ email: 1 });
+  const demoIds = demoAccounts.map(user => user._id);
   let listingsCreated = 0;
 
   for (let i = 0; i < demoAccounts.length; i += 1) {
     const account = demoAccounts[i];
     const existingCount = await Listing.countDocuments({ user: account._id });
-
-    if (existingCount >= 2) continue;
-
-    const needed = 2 - existingCount;
-
-    for (let j = 0; j < needed; j += 1) {
+    for (let j = existingCount; j < 2; j += 1) {
       const route = ROUTES[(i + j) % ROUTES.length];
-      const listingNumber = existingCount + j + 1;
-
       await Listing.create({
         user: account._id,
         companyName: account.companyName,
@@ -113,39 +102,106 @@ const bootstrapDemoData = async () => {
         pricePerCBM: 120 + ((i * 17 + j * 35) % 180),
         cargoType: j % 2 === 0 ? 'General' : 'Food-Grade',
       });
-
       listingsCreated += 1;
     }
   }
 
-  // Create realistic demo purchase history once, so the admin can demonstrate spend analytics.
+  // Keep demo booking history repeatable and representative of the current request workflow.
+  // No demo booking is marked paid: checkout and invoice issuance remain disabled.
+  const demoBookings = [];
   for (let i = 0; i < demoAccounts.length; i += 1) {
     const buyer = demoAccounts[i];
-    const existingPurchase = await Booking.exists({ buyer: buyer._id });
 
-    if (existingPurchase) continue;
-
-    const seller = demoAccounts[(i + 1) % demoAccounts.length];
-    const listing = await Listing.findOne({ user: seller._id }).sort({ createdAt: 1 });
-
-    if (!listing) continue;
-
-    const quantityCBM = 1 + (i % 3);
-    const amount = Number((quantityCBM * listing.pricePerCBM).toFixed(2));
-
-    await Booking.create({
-      listing: listing._id,
+    // Convert the old seeded "confirmed but unpaid" record to the current accepted state.
+    const oldSeedBooking = await Booking.findOne({
       buyer: buyer._id,
-      seller: listing.user,
-      quantityCBM,
-      amount,
-      status: 'confirmed',
-      paymentStatus: 'unpaid',
-      createdAt: new Date(Date.now() - (i + 1) * 86400000),
-    });
+      seller: { $in: demoIds },
+      paymentStatus: { $ne: 'paid' },
+    }).sort({ createdAt: 1 });
+    if (oldSeedBooking?.status === 'confirmed') {
+      oldSeedBooking.status = 'accepted';
+      await oldSeedBooking.save();
+    }
+
+    const partners = [(i + 1) % demoAccounts.length, (i + 2) % demoAccounts.length];
+    for (let j = 0; j < partners.length; j += 1) {
+      const seller = demoAccounts[partners[j]];
+      const listing = await Listing.findOne({ user: seller._id }).sort({ createdAt: 1 });
+      if (!listing) continue;
+
+      let booking = await Booking.findOne({ buyer: buyer._id, seller: seller._id, listing: listing._id });
+      if (!booking) {
+        const quantityCBM = 1 + ((i + j) % 2);
+        const statuses = ['pending', 'accepted', 'rejected', 'cancelled'];
+        const status = j === 0 ? (i % 4 === 0 ? 'pending' : 'accepted') : statuses[i % statuses.length];
+        if (status === 'accepted') {
+          const reserved = await Listing.findOneAndUpdate(
+            { _id: listing._id, availableCBM: { $gte: quantityCBM } },
+            { $inc: { availableCBM: -quantityCBM } },
+            { new: true }
+          );
+          if (!reserved) continue;
+        }
+        booking = await Booking.create({
+          listing: listing._id,
+          buyer: buyer._id,
+          seller: seller._id,
+          quantityCBM,
+          amount: Number((quantityCBM * listing.pricePerCBM).toFixed(2)),
+          status,
+          paymentStatus: 'unpaid',
+          sellerNote: status === 'accepted' ? 'Demo request accepted; payment is not enabled.' : '',
+          createdAt: new Date(Date.now() - (i * 2 + j + 1) * 86400000),
+        });
+      }
+      demoBookings.push(booking);
+    }
   }
 
-  console.log(`Demo data ready. Added ${listingsCreated} listings and purchase history for admin analytics.`);
+  // Seed a conversation and related notification for each demo booking, but only once.
+  let conversationsCreated = 0;
+  let notificationsCreated = 0;
+  for (const booking of demoBookings) {
+    const messageCount = await Message.countDocuments({ booking: booking._id });
+    if (messageCount === 0) {
+      const buyer = demoAccounts.find(user => String(user._id) === String(booking.buyer));
+      const seller = demoAccounts.find(user => String(user._id) === String(booking.seller));
+      if (buyer && seller) {
+        await Message.create([
+          { booking: booking._id, sender: buyer._id, recipient: seller._id, body: 'Hello! I would like to coordinate the shipment details for this booking.' },
+          { booking: booking._id, sender: seller._id, recipient: buyer._id, body: booking.status === 'accepted' ? 'Thanks for the request. The space is reserved; payment is not enabled yet.' : 'Thanks for reaching out. I will review the request and confirm the details.' },
+        ]);
+        conversationsCreated += 1;
+      }
+    }
+
+    const hasBookingNotification = await Notification.exists({ relatedBooking: booking._id });
+    if (!hasBookingNotification) {
+      await Notification.create({
+        user: booking.seller,
+        type: 'booking_request',
+        title: 'Demo booking activity',
+        body: 'A demo buyer has activity on a sample container-space request.',
+        link: '/dashboard',
+        relatedBooking: booking._id,
+      });
+      await Notification.create({
+        user: booking.buyer,
+        type: booking.status === 'accepted' ? 'booking_accepted' : 'booking_request',
+        title: booking.status === 'accepted' ? 'Demo request accepted' : 'Demo booking activity',
+        body: booking.status === 'accepted'
+          ? 'The sample request is accepted. Payment remains disabled.'
+          : 'This is sample activity for exploring the booking workflow.',
+        link: '/dashboard',
+        relatedBooking: booking._id,
+      });
+      notificationsCreated += 2;
+    }
+  }
+
+  console.log(
+    `Demo data ready. Added ${listingsCreated} listings, prepared ${demoBookings.length} booking records, ${conversationsCreated} conversations and ${notificationsCreated} notifications.`
+  );
 };
 
 export default bootstrapDemoData;
