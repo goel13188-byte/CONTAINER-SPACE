@@ -463,6 +463,19 @@ The marketplace now includes a booking-request workflow, buyer/seller messaging,
 
 All booking, notification, and messaging endpoints require a valid JWT bearer token. Payment is deliberately not enabled until a gateway is configured and payment signatures can be verified server-side.
 
+
+## 💸 Platform commission and owner analytics
+
+The protected admin console includes platform-wide booking analytics at `GET /api/admin/analytics`. It shows verified paid transaction value, commission actually earned, active unpaid booking value, estimated potential commission, and recent booking activity.
+
+The default platform commission is **2%** and can be changed in Render → Environment:
+
+```env
+PLATFORM_FEE_PERCENT=2
+```
+
+Allowed values are 0–10. The dashboard calculates actual commission only for bookings whose status is `confirmed` and payment status is `paid`. Pending or accepted unpaid requests appear only as an estimate and are **not revenue**. Since checkout/payment verification is currently disabled, actual commission remains zero until a real payment integration is implemented and verifies payments. Do not mark demo bookings as paid to inflate revenue analytics.
+
 ## 🤖 ShipBot troubleshooting
 
 Check:
