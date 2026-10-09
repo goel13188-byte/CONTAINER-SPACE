@@ -14,7 +14,7 @@ const ListingCard = ({ listing }) => {
     try {
       setBooking(true); setMessage('');
       await api.post('/bookings', { listingId: listing._id, quantityCBM: 1 });
-      setMessage('1 CBM booked successfully.');
+      setMessage('Booking request submitted. The seller must accept it before payment.');
     } catch (err) {
       setMessage(err?.response?.data?.message || 'Unable to book this space.');
     } finally { setBooking(false); }
@@ -35,7 +35,7 @@ const ListingCard = ({ listing }) => {
       </div>
       <div className="card-footer">
         <Link className="btn btn-outline listing-details-link" to={`/listing/${listing._id}`}>View details</Link><Link className="seller-profile-link" to={`/company/${listing.user?._id || listing.user}`}>Company profile ↗</Link>
-        <button className="btn" onClick={handleBook} disabled={booking}>{booking ? 'Booking…' : 'Book 1 CBM'}</button>
+        <button className="btn" onClick={handleBook} disabled={booking}>{booking ? 'Submitting…' : 'Request 1 CBM'}</button>
         {message && <span className="booking-message">{message}</span>}
       </div>
     </article>
