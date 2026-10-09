@@ -8,6 +8,8 @@ const money = (value) => `$${Number(value || 0).toLocaleString(undefined, {
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
+  const [platform, setPlatform] = useState(null);
+  const [platformError, setPlatformError] = useState('');
   const [selectedId, setSelectedId] = useState(null);
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,8 +30,19 @@ const AdminPage = () => {
     }
   };
 
+  const loadPlatform = async () => {
+    try {
+      const { data } = await api.get('/admin/analytics');
+      setPlatform(data);
+      setPlatformError('');
+    } catch (err) {
+      setPlatformError(err?.response?.data?.message || 'Unable to load platform earnings.');
+    }
+  };
+
   useEffect(() => {
     loadUsers();
+    loadPlatform();
   }, []);
 
   const openUser = async (id) => {
@@ -78,6 +91,48 @@ const AdminPage = () => {
         <strong>Security:</strong> passwords are never displayed. They are stored as secure hashes.
         Demo accounts use the password configured in Render.
       </div>
+
+      <section className="admin-card" style={{ marginBottom: 24 }}>
+        <div className="admin-section-heading">
+          <div>
+            <span className="eyebrow dark">OWNER REVENUE</span>
+            <h2>Platform commission</h2>
+            <p style={{ marginTop: 6 }}>Current fee: {platform?.feePercent ?? 2}% of successfully paid bookings.</p>
+          </div>
+          <button className="admin-action" onClick={loadPlatform}>Refresh analytics</button>
+        </div>
+        {platformError && <p className="message-error">{platformError}</p>}
+        <div className="detail-kpis" style={{ marginTop: 16 }}>
+          <div className="mini-kpi accent"><span>Earned commission</span><strong>{money(platform?.platformRevenue)}</strong><small>verified paid bookings only</small></div>
+          <div className="mini-kpi"><span>Paid transaction value</span><strong>{money(platform?.paidGross)}</strong><small>{platform?.paidBookingCount ?? 0} paid bookings</small></div>
+          <div className="mini-kpi"><span>Potential commission</span><strong>{money(platform?.potentialFee)}</strong><small>estimate from active unpaid requests</small></div>
+          <div className="mini-kpi"><span>Marketplace activity</span><strong>{platform?.bookingCount ?? 0}</strong><small>{platform?.usersCount ?? users.length} users · {platform?.listingsCount ?? 0} listings</small></div>
+        </div>
+        <p className="admin-table-hint" style={{ marginTop: 14 }}>
+          Payment checkout is still disabled. Therefore demo requests contribute only to the potential commission estimate; actual earned commission stays $0 until a real payment is verified.
+        </p>
+        <div style={{ overflowX: 'auto', marginTop: 18 }}>
+          <table className="admin-table">
+            <thead><tr><th>Date</th><th>Buyer</th><th>Seller</th><th>Route</th><th>Booking value</th><th>Status</th><th>Est. fee</th></tr></thead>
+            <tbody>
+              {(platform?.recentBookings || []).length ? platform.recentBookings.map((booking) => {
+                const isPaid = booking.paymentStatus === 'paid' && booking.status === 'confirmed';
+                const isActive = ['pending', 'accepted'].includes(booking.status) && booking.paymentStatus !== 'paid';
+                const fee = Number(booking.amount || 0) * Number(platform?.feePercent ?? 2) / 100;
+                return <tr key={booking._id}>
+                  <td>{new Date(booking.createdAt).toLocaleDateString()}</td>
+                  <td>{booking.buyer?.name || 'Unknown buyer'}</td>
+                  <td>{booking.seller?.companyName || booking.seller?.name || 'Unknown seller'}</td>
+                  <td>{booking.listing ? `${booking.listing.origin} → ${booking.listing.destination}` : 'Listing unavailable'}</td>
+                  <td>{money(booking.amount)}</td>
+                  <td><span className={`role-pill ${isPaid ? 'admin' : 'user'}`}>{isPaid ? 'paid' : booking.status}</span></td>
+                  <td>{money(isPaid || isActive ? fee : 0)}{isPaid ? '' : ' est.'}</td>
+                </tr>;
+              }) : <tr><td colSpan="7">No booking transactions yet. Demo activity appears here after the seed runs.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {message && <div className="message-success">{message}</div>}
       {error && <div className="message-error">{error}</div>}
