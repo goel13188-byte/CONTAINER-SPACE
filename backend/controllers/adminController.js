@@ -124,4 +124,52 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export { listUsers, getUserOverview, updateRole, resetPassword };
+
+const getPlatformAnalytics = async (req, res) => {
+  try {
+    const configuredRate = Number(process.env.PLATFORM_FEE_PERCENT ?? 2);
+    const feePercent = Number.isFinite(configuredRate) && configuredRate >= 0 && configuredRate <= 10
+      ? configuredRate
+      : 2;
+
+    const [usersCount, listingsCount, bookings, recentBookings] = await Promise.all([
+      User.countDocuments({}),
+      Listing.countDocuments({}),
+      Booking.find({}).select('amount status paymentStatus createdAt'),
+      Booking.find({})
+        .populate('buyer', 'name email')
+        .populate('seller', 'name companyName')
+        .populate('listing', 'origin destination')
+        .sort({ createdAt: -1 })
+        .limit(12),
+    ]);
+
+    const paidBookings = bookings.filter(item => item.paymentStatus === 'paid' && item.status === 'confirmed');
+    const activeUnpaidBookings = bookings.filter(
+      item => ['pending', 'accepted'].includes(item.status) && item.paymentStatus !== 'paid'
+    );
+    const paidGross = paidBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const estimatedGross = activeUnpaidBookings.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    const platformRevenue = paidGross * feePercent / 100;
+    const potentialFee = estimatedGross * feePercent / 100;
+
+    res.json({
+      feePercent,
+      usersCount,
+      listingsCount,
+      bookingCount: bookings.length,
+      paidBookingCount: paidBookings.length,
+      activeUnpaidCount: activeUnpaidBookings.length,
+      paidGross: Number(paidGross.toFixed(2)),
+      platformRevenue: Number(platformRevenue.toFixed(2)),
+      estimatedGross: Number(estimatedGross.toFixed(2)),
+      potentialFee: Number(potentialFee.toFixed(2)),
+      recentBookings,
+    });
+  } catch (error) {
+    console.error('Admin platform analytics error:', error);
+    res.status(500).json({ message: 'Unable to load platform analytics.' });
+  }
+};
+
+export { listUsers, getUserOverview, updateRole, resetPassword, getPlatformAnalytics };
