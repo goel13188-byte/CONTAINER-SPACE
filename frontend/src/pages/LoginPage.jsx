@@ -7,14 +7,18 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext); // Get the login function
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
+    setMessage('');
     try {
-      const { data } = await api.post('/users/login', { email, password });
+      const { data } = await api.post('/users/login', { email, password }, { timeout: 90000 });
 
       // Call context login function
       login(data, data.token);
@@ -22,7 +26,9 @@ const LoginPage = () => {
       setMessage('Login successful!');
       navigate('/dashboard'); // Redirect to the dashboard
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Invalid email or password');
+      setMessage(error.response?.data?.message || (error.code === 'ECONNABORTED' ? 'The server is taking longer than expected. Please try again shortly.' : 'Unable to connect to the server. Please try again.'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,8 +55,8 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit" className="btn">
-          Login
+        <button type="submit" className="btn" disabled={isLoading}>
+          {isLoading ? 'Waking server / Signing in…' : 'Login'}
         </button>
       </form>
       <p style={{ marginTop: '1rem' }}>
