@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import Booking from '../models/bookingModel.js';
 import Listing from '../models/listingModel.js';
 import Notification from '../models/notificationModel.js';
@@ -52,8 +51,9 @@ const updateBookingStatus=async(req,res)=>{
    await booking.save();
    await Notification.create({user:booking.buyer,type:'booking_accepted',title:'Booking accepted',body:'Your request was accepted. Complete payment to confirm the reservation.',link:'/dashboard',relatedBooking:booking._id});
   }else{
+   const wasAccepted=booking.status==='accepted';
    booking.status=status;booking.sellerNote=String(sellerNote).slice(0,500);
-   if(status==='cancelled'){const wasAccepted=booking.status==='accepted';booking.cancelledAt=new Date();if(wasAccepted){await Listing.updateOne({_id:booking.listing,user:booking.seller},{$inc:{availableCBM:booking.quantityCBM}});}}
+   if(status==='cancelled'){booking.cancelledAt=new Date();if(wasAccepted){await Listing.updateOne({_id:booking.listing,user:booking.seller},{$inc:{availableCBM:booking.quantityCBM}});}}
    await booking.save();
    if(status==='rejected')await Notification.create({user:booking.buyer,type:'booking_rejected',title:'Booking request declined',body:'The seller declined your booking request.',link:'/dashboard',relatedBooking:booking._id});
    if(status==='cancelled')await Notification.create({user:booking.seller,type:'booking_cancelled',title:'Booking request cancelled',body:'The buyer cancelled a booking request.',link:'/dashboard',relatedBooking:booking._id});
