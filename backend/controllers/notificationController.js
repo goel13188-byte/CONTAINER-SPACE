@@ -1,0 +1,5 @@
+import Notification from '../models/notificationModel.js';
+const listNotifications=async(req,res)=>{try{const items=await Notification.find({user:req.user._id}).sort({createdAt:-1}).limit(50);res.json({items,unreadCount:await Notification.countDocuments({user:req.user._id,readAt:null})});}catch(e){res.status(500).json({message:'Unable to load notifications.'});}};
+const markRead=async(req,res)=>{try{const item=await Notification.findOneAndUpdate({_id:req.params.id,user:req.user._id},{readAt:new Date()},{new:true});if(!item)return res.status(404).json({message:'Notification not found.'});res.json(item);}catch(e){res.status(500).json({message:'Unable to update notification.'});}};
+const markAllRead=async(req,res)=>{try{await Notification.updateMany({user:req.user._id,readAt:null},{readAt:new Date()});res.json({message:'All notifications marked as read.'});}catch(e){res.status(500).json({message:'Unable to update notifications.'});}};
+export {listNotifications,markRead,markAllRead};
