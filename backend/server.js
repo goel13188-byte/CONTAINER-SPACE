@@ -9,6 +9,8 @@ import chatRoutes from './routes/chatRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 import bootstrapDemoData from './utils/bootstrapDemoData.js';
 
 dotenv.config();
@@ -37,6 +39,8 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/messages', messageRoutes);
 
 const PORT = process.env.PORT || 5001;
 
