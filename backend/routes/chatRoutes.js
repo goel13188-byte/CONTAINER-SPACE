@@ -12,7 +12,7 @@ router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     configured: Boolean(process.env.GEMINI_API_KEY),
-    model: 'gemini-2.5-flash',
+    model: 'gemini-3.8-flash',
   });
 });
 
@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
     }
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent',
       {
         method: 'POST',
         headers: {
