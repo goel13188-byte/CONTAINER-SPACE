@@ -34,7 +34,7 @@ const ListingCard = ({ listing }) => {
         <p><strong>Cargo</strong><span className="cargo-badge">{listing.cargoType}</span></p>
       </div>
       <div className="card-footer">
-        <Link className="btn btn-outline listing-details-link" to={`/listing/${listing._id}`}>View details</Link>
+        <Link className="btn btn-outline listing-details-link" to={`/listing/${listing._id}`}>View details</Link><Link className="seller-profile-link" to={`/company/${listing.user?._id || listing.user}`}>Company profile ↗</Link>
         <button className="btn" onClick={handleBook} disabled={booking}>{booking ? 'Booking…' : 'Book 1 CBM'}</button>
         {message && <span className="booking-message">{message}</span>}
       </div>
