@@ -51,11 +51,10 @@ const Chatbot = () => {
       ]);
     } catch (error) {
       console.error('Chatbot request failed:', error);
-      const message =
-        error?.response?.data?.message ||
-        error?.code === 'ECONNABORTED'
+      const message = error?.response?.data?.message
+        || (error?.code === 'ECONNABORTED'
           ? 'ShipBot is taking too long to respond. Please try again.'
-          : 'Chatbot is temporarily unavailable. Please try again.';
+          : 'Chatbot is temporarily unavailable. Please try again.');
 
       setMessages((prev) => [
         ...prev,
