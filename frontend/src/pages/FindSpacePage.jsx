@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import ListingCard from '../components/ListingCard';
 
 const defaults = { origin:'', destination:'', cargoType:'', from:'', to:'', minCBM:'', maxPrice:'', sort:'soonest' };
 export default function FindSpacePage() {
+  const [searchParams] = useSearchParams();
   const [listings,setListings] = useState([]);
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState('');
-  const [filters,setFilters] = useState(defaults);
+  const [filters,setFilters] = useState(() => ({ ...defaults, origin: searchParams.get('origin') || '', destination: searchParams.get('destination') || '', cargoType: searchParams.get('cargoType') || '' }));
   const set = (key,value) => setFilters(old => ({...old,[key]:value}));
   useEffect(() => {
     let active=true;
