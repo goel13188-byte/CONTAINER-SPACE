@@ -46,9 +46,7 @@ const CreateListingPage = () => {
   };
 
   return (
-    <div>
-      <h1>List Your Unused Space</h1>
-      <p>Fill out the details below to put your empty space on the marketplace.</p>
+    <section className="create-listing-page"><header className="create-listing-hero glass-panel"><span className="eyebrow">SUPPLY NETWORK / NEW LISTING</span><h1>Put your available space to work.</h1><p>Publish a route with clear capacity, departure and pricing details so buyers can find the right fit.</p><div className="create-hero-route"><span>ORIGIN</span><b>● ─ ─ ─ ─ ◉</b><span>DESTINATION</span></div></header><div className="create-listing-form glass-panel"><h2>Shipment specifications</h2><p>Complete the details below to publish your container space.</p>
 
       {error && <p className="message-error">{error}</p>}
       {message && <p className="message-success">{message}</p>}
@@ -127,7 +125,7 @@ const CreateListingPage = () => {
           Create Listing
         </button>
       </form>
-    </div>
+    </div></section>
   );
 };
 
