@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import api from './services/api';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import FindSpacePage from './pages/FindSpacePage';
@@ -33,7 +32,7 @@ function App() {
       <Navbar />
       <main>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Navigate to="/find-space" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/find-space" element={<FindSpacePage />} />
