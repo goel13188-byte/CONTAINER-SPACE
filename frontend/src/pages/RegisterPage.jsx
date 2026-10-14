@@ -30,8 +30,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
-      <h1>Create Your Account</h1>
+    <section className="auth-page register-page"><div className="auth-visual"><span className="eyebrow">JOIN THE NETWORK</span><h2>Make every cubic metre count.</h2><p>Connect with shipping partners and turn available container space into new opportunities.</p><div className="auth-visual-stats"><span><strong>01</strong> Create profile</span><span><strong>02</strong> Publish space</span><span><strong>03</strong> Grow network</span></div></div><div className="auth-card glass-panel">
+      <span className="eyebrow">GET STARTED</span><h1>Create Your Account</h1>
       {message && <p className={message.includes('successful') ? "message-success" : "message-error"}>{message}</p>}
       <form onSubmit={submitHandler}>
         <div>
@@ -77,7 +77,7 @@ const RegisterPage = () => {
        <p style={{ marginTop: '1rem' }}>
         Already have an account? <Link to="/login">Login here</Link>
       </p>
-    </div>
+    </div></section>
   );
 };
 
