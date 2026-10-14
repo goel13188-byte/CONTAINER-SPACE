@@ -1489,3 +1489,98 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .invoice-sheet { background:#fff!important; color:#111!important; box-shadow:none!important; border:0!important; }
   .invoice-sheet h1,.invoice-sheet h2,.invoice-sheet h3,.invoice-sheet p,.invoice-sheet td { color:#111!important; }
 }
+
+
+/* --- SHIPSPACE CINEMATIC FULL-PAGE PORT BACKDROPS --- */
+/* The image sits behind the entire page (not just inside the hero card).
+   Each major section gets its own shipping photograph while the dark veil
+   keeps text, forms, charts and tables readable. */
+body {
+  background: #070b16 !important;
+  color: #eef2ff;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(115deg, rgba(5, 9, 20, .84) 0%, rgba(7, 12, 26, .72) 48%, rgba(5, 9, 20, .78) 100%),
+    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateZ(0);
+}
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+body:has(.marketplace-page)::before {
+  background-image: linear-gradient(110deg, rgba(5, 9, 20, .78), rgba(5, 9, 20, .45) 52%, rgba(5, 9, 20, .68)),
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 46%;
+}
+body:has(.pricing-page-shell)::before {
+  background-image: linear-gradient(115deg, rgba(5, 9, 20, .78), rgba(5, 9, 20, .48) 52%, rgba(5, 9, 20, .72)),
+    url("https://images.unsplash.com/photo-1516900557549-41557d405adf?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 52%;
+}
+body:has(.dashboard-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 10, 23, .76), rgba(4, 10, 23, .5) 50%, rgba(4, 10, 23, .72)),
+    url("https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 48%;
+}
+body:has(.admin-page)::before {
+  background-image: linear-gradient(115deg, rgba(5, 8, 20, .78), rgba(10, 12, 30, .53) 52%, rgba(5, 8, 20, .76)),
+    url("https://images.unsplash.com/photo-1578575437130-527bud4f9?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 48%;
+}
+body:has(.analytics-page)::before {
+  background-image: linear-gradient(115deg, rgba(5, 9, 20, .8), rgba(5, 12, 28, .52) 52%, rgba(5, 9, 20, .75)),
+    url("https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=2400&q=85");
+  background-position: center;
+}
+body:has(.auth-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 8, 19, .72), rgba(6, 12, 28, .48) 52%, rgba(4, 8, 19, .74)),
+    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+  background-position: center;
+}
+body:has(.create-listing-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 8, 19, .8), rgba(6, 12, 28, .54) 52%, rgba(4, 8, 19, .76)),
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 55%;
+}
+body:has(.messages-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 8, 19, .8), rgba(6, 12, 28, .52) 52%, rgba(4, 8, 19, .76)),
+    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 45%;
+}
+body:has(.invoice-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 8, 19, .9), rgba(6, 12, 28, .76)),
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
+  background-position: center;
+}
+body:has(.listing-details-page)::before,
+body:has(.seller-page)::before {
+  background-image: linear-gradient(115deg, rgba(4, 8, 19, .78), rgba(6, 12, 28, .5) 52%, rgba(4, 8, 19, .76)),
+    url("https://images.unsplash.com/photo-1516900557549-41557d405adf?auto=format&fit=crop&w=2400&q=85");
+  background-position: center 50%;
+}
+/* Keep page content above the fixed background and let the image continue
+   behind long, scrollable pages. Avoid opaque main wrappers hiding it. */
+main {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+@media (max-width: 700px) {
+  body::before {
+    background-position: center;
+  }
+}
+@media print {
+  body::before { display: none !important; }
+}
