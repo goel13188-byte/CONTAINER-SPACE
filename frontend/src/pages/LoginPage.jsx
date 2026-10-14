@@ -33,8 +33,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
-      <h1>Login to Your Account</h1>
+    <section className="auth-page login-page"><div className="auth-visual"><span className="eyebrow">SHIPSPACE IDENTITY</span><h2>Your shipping network, connected.</h2><p>One workspace for container capacity, bookings and business conversations.</p><div className="auth-visual-stats"><span><strong>01</strong> Find space</span><span><strong>02</strong> Connect</span><span><strong>03</strong> Ship smarter</span></div></div><div className="auth-card glass-panel">
+      <span className="eyebrow">WELCOME BACK</span><h1>Login to Your Account</h1>
       {message && <p className="message-error">{message}</p>}
       <form onSubmit={submitHandler}>
         <div>
@@ -62,7 +62,7 @@ const LoginPage = () => {
       <p style={{ marginTop: '1rem' }}>
         New user? <Link to="/register">Register here</Link>
       </p>
-    </div>
+    </div></section>
   );
 };
 
