@@ -5,7 +5,7 @@ const PricingPage = () => {
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
-    <div className="pricing-container">
+    <section className="pricing-page-shell"><header className="pricing-hero"><span className="eyebrow">SHIPSPACE PLANS</span><h1>Space to grow your business.</h1><p>Choose the tools that fit your shipping volume today, with room to scale tomorrow.</p><div className="pricing-hero-route"><span>CAPACITY</span><i/><span>CONNECTIONS</span><i/><span>INSIGHTS</span></div></header><div className="pricing-container">
       <div className="pricing-toggle">
         <button
           className={`btn-toggle ${!isAnnual ? 'active' : ''}`}
@@ -71,7 +71,7 @@ const PricingPage = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </div></section>
   );
 };
 
