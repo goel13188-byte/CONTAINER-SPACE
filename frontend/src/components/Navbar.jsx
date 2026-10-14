@@ -7,7 +7,7 @@ const Navbar=()=>{
  const onLogout=()=>{logout();navigate('/login');};
  const linkClass=({isActive})=>isActive?'nav-link is-active':'nav-link';
  return <nav className="navbar">
-  <Link to="/" className="navbar-logo" aria-label="ShipSpace home"><span className="brand-mark">◆</span><span>Ship<span>Space</span></span></Link>
+  <Link to="/find-space" className="navbar-logo" aria-label="ShipSpace marketplace"><span className="brand-mark">◆</span><span>Ship<span>Space</span></span></Link>
   <div className="navbar-links">
    <NavLink to="/find-space" className={linkClass}>Find Space</NavLink>
    <NavLink to="/analytics" className={linkClass}>Analytics</NavLink>
