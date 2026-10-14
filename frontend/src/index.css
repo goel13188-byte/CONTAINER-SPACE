@@ -1369,7 +1369,7 @@ main:has(.home-experience) { max-width:none; padding:1.1rem clamp(1rem,4vw,3.5re
 
 /* --- Unified visual language across every ShipSpace route --- */
 :root { --ss-violet:#9382ff; --ss-cyan:#72d8ee; --ss-mint:#5ce0bc; --ss-line:rgba(177,190,230,.17); }
-body { background-image:radial-gradient(ellipse at 8% 10%,rgba(91,76,230,.15),transparent 30rem),radial-gradient(ellipse at 92% 38%,rgba(20,155,194,.075),transparent 32rem),linear-gradient(rgba(6,10,22,.92),rgba(6,10,22,.96)),url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2000&q=70'); background-attachment:fixed; background-position:center; background-size:cover; }
+body { background-image:radial-gradient(ellipse at 8% 10%,rgba(91,76,230,.15),transparent 30rem),radial-gradient(ellipse at 92% 38%,rgba(20,155,194,.075),transparent 32rem),linear-gradient(rgba(6,10,22,.92),rgba(6,10,22,.96)),url('https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2000&q=70'); background-attachment:fixed; background-position:center; background-size:cover; }
 main { position:relative; }
 main:has(.dashboard-page), main:has(.analytics-page), main:has(.pricing-page-shell), main:has(.create-listing-page), main:has(.auth-page), main:has(.listing-details-page), main:has(.seller-page), main:has(.messages-page), main:has(.invoice-page), main:has(.admin-page), main:has(.marketplace-page) { max-width:1500px; padding:1.4rem clamp(1rem,3vw,2.6rem) 3.5rem; }
 .glass-panel { background:linear-gradient(145deg,rgba(19,27,49,.9),rgba(10,16,31,.84)); border:1px solid var(--ss-line); box-shadow:0 18px 55px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.055); backdrop-filter:blur(18px); }
@@ -1435,7 +1435,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .dashboard-kpi:hover { transform:translateY(-3px); border-color:rgba(139,124,255,.35); }
 .dashboard-section { background:linear-gradient(150deg,rgba(19,27,49,.91),rgba(10,16,31,.86)); border:1px solid var(--ss-line); box-shadow:0 16px 42px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.04); }
 .messages-page { max-width:980px; margin:0 auto; }
-.messages-hero { position:relative; isolation:isolate; overflow:hidden; border-radius:22px; background:linear-gradient(90deg,rgba(8,13,27,.96),rgba(8,13,27,.76)),url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1500&q=75') center/cover; }
+.messages-hero { position:relative; isolation:isolate; overflow:hidden; border-radius:22px; background:linear-gradient(90deg,rgba(8,13,27,.96),rgba(8,13,27,.76)),url('https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=1500&q=75') center/cover; }
 .messages-hero::after { content:""; position:absolute; z-index:-1; right:-50px; top:-90px; width:240px; height:240px; border:1px solid rgba(139,124,255,.2); border-radius:50%; box-shadow:0 0 0 25px rgba(139,124,255,.04),0 0 0 50px rgba(139,124,255,.025); }
 .messages-thread { border-radius:20px; }
 .message-bubble { border:1px solid rgba(177,190,230,.12); background:rgba(255,255,255,.035); border-radius:15px; padding:1rem; }
@@ -1452,7 +1452,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .admin-table td { color:#d8e0f3; }
 
 .pricing-page-shell { max-width:1200px; margin:0 auto; }
-.pricing-hero { position:relative; isolation:isolate; overflow:hidden; padding:clamp(2rem,5vw,4rem) 1rem 2.2rem; margin-bottom:1.5rem; text-align:center; border:1px solid rgba(177,190,230,.17); border-radius:24px; background:linear-gradient(90deg,rgba(8,13,27,.96),rgba(8,13,27,.82)),url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1700&q=75') center 42%/cover; }
+.pricing-hero { position:relative; isolation:isolate; overflow:hidden; padding:clamp(2rem,5vw,4rem) 1rem 2.2rem; margin-bottom:1.5rem; text-align:center; border:1px solid rgba(177,190,230,.17); border-radius:24px; background:linear-gradient(90deg,rgba(8,13,27,.96),rgba(8,13,27,.82)),url('https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=1700&q=75') center 42%/cover; }
 .pricing-hero h1 { margin:.65rem auto .6rem; max-width:780px; font-size:clamp(2.1rem,4vw,3.5rem); letter-spacing:-.05em; }
 .pricing-hero p { max-width:650px; margin:0 auto; }
 .pricing-hero-route { display:flex; justify-content:center; align-items:center; gap:.75rem; margin-top:1.35rem; color:#b4c0dc; font-size:.65rem; font-weight:800; letter-spacing:.13em; }
@@ -1507,7 +1507,7 @@ body::before {
   pointer-events: none;
   background-image:
     linear-gradient(115deg, rgba(5, 9, 20, .84) 0%, rgba(7, 12, 26, .72) 48%, rgba(5, 9, 20, .78) 100%),
-    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1535,7 +1535,7 @@ body:has(.dashboard-page)::before {
 }
 body:has(.admin-page)::before {
   background-image: linear-gradient(115deg, rgba(5, 8, 20, .78), rgba(10, 12, 30, .53) 52%, rgba(5, 8, 20, .76)),
-    url("https://images.unsplash.com/photo-1578575437130-527bud4f9?auto=format&fit=crop&w=2400&q=85");
+    url("https://images.unsplash.com/photo-1516900557549-41557d405adf?auto=format&fit=crop&w=2400&q=85");
   background-position: center 48%;
 }
 body:has(.analytics-page)::before {
@@ -1545,7 +1545,7 @@ body:has(.analytics-page)::before {
 }
 body:has(.auth-page)::before {
   background-image: linear-gradient(115deg, rgba(4, 8, 19, .72), rgba(6, 12, 28, .48) 52%, rgba(4, 8, 19, .74)),
-    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
   background-position: center;
 }
 body:has(.create-listing-page)::before {
@@ -1555,7 +1555,7 @@ body:has(.create-listing-page)::before {
 }
 body:has(.messages-page)::before {
   background-image: linear-gradient(115deg, rgba(4, 8, 19, .8), rgba(6, 12, 28, .52) 52%, rgba(4, 8, 19, .76)),
-    url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=85");
+    url("https://images.unsplash.com/photo-1494412519320-aa613dfb7738?auto=format&fit=crop&w=2400&q=85");
   background-position: center 45%;
 }
 body:has(.invoice-page)::before {
